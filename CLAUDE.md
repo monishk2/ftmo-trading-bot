@@ -77,6 +77,12 @@ ATR percentile + ADX determine if market is trending (favor breakout), ranging (
 
 ## FTMO Rules (HARD LIMITS — Guardian must enforce these)
 - Max daily loss: 5% of starting daily balance (Guardian triggers at 4% as safety buffer)
+  - **Daily loss reference**: calculated against Account Balance at 00:00 CET server time (FTMO uses CET/CEST).
+    Guardian must record the midnight CET balance each day and compare ALL intraday P&L
+    (realized + floating unrealized) against THIS specific figure.
+    If equity drops more than 4% below midnight-CET balance at any point → block all new trades
+    AND close all open positions immediately.
+    Use `utils.timezone.get_midnight_cet()` to derive the reference timestamp.
 - Max total drawdown: 10% of initial balance (Guardian triggers at 9%)
 - Min trading days: 4 (for challenge)
 - Profit target: 10% (challenge), 5% (verification)
