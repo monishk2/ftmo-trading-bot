@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.Python
+env/
+venv/
+.venv/
+pip-wheel-metadata/
+
+# Data files — never commit historical data or credentials
+data/historical/
+*.parquet
+*.csv
+*.feather
+
+# Logs
+logs/
+*.log
+
+# Credentials & secrets
+.env
+*.env
+config/live_credentials.json
+config/ctrader_credentials.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Reports — generated output, not source
+reports/
+config/mt5_credentials.json
+config/ctrader_credentials.json
+data/historical/
+venv/
+__pycache__/
+*.pyc
+.DS_Store

@@ -1,0 +1,47 @@
+{
+  "london_open_breakout": {
+    "asian_range_start": "00:00",
+    "asian_range_end": "02:45",
+    "entry_window_start": "03:00",
+    "entry_window_end": "05:30",
+    "timezone": "US/Eastern",
+    "min_asian_range_pips": 15,
+    "max_asian_range_pips": 40,
+    "entry_buffer_pips": 2,
+    "risk_reward_ratio": 2.0,
+    "risk_per_trade_pct": 0.75,
+    "max_trades_per_day": 1,
+    "time_stop_hour": "12:00",
+    "no_friday_trading": true,
+    "instruments": ["EURUSD", "GBPUSD"]
+  },
+  "fvg_retracement": {
+    "fvg_scan_start": "03:00",
+    "fvg_scan_end": "06:00",
+    "entry_window_start": "09:30",
+    "entry_window_end": "12:00",
+    "timezone": "US/Eastern",
+    "min_fvg_size_pips": 5,
+    "max_fvg_size_pips": 30,
+    "fvg_entry_level": 0.5,
+    "entry_buffer_pips": 3,
+    "risk_reward_ratio": 2.0,
+    "risk_per_trade_pct": 0.5,
+    "max_trades_per_day": 1,
+    "cancel_unfilled_hour": "12:00",
+    "time_stop_hour": "16:00",
+    "no_friday_trading": true,
+    "ema_period": 200,
+    "ema_timeframe": "1H",
+    "instruments": ["EURUSD", "GBPUSD"]
+  },
+  "regime_filter": {
+    "atr_period": 14,
+    "atr_lookback_days": 60,
+    "high_vol_percentile": 70,
+    "low_vol_percentile": 30,
+    "adx_period": 14,
+    "adx_trending_threshold": 25,
+    "adx_ranging_threshold": 20
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "EURUSD": {
+    "pip_size": 0.0001,
+    "typical_spread_pips": 1.0,
+    "max_slippage_pips": 0.5,
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
+  "GBPUSD": {
+    "pip_size": 0.0001,
+    "typical_spread_pips": 1.2,
+    "max_slippage_pips": 0.5,
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  }
+}

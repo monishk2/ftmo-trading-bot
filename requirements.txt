@@ -1,0 +1,31 @@
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+pyarrow>=12.0.0      # parquet support
+
+# Technical analysis
+ta>=0.11.0
+
+# Visualization
+plotly>=5.15.0
+kaleido>=0.2.1       # static image export for plotly
+
+# Live execution
+ctrader-open-api>=2.0.0
+
+# Scheduling & automation
+schedule>=1.2.0
+
+# HTTP
+requests>=2.31.0
+
+# Timezone handling
+pytz>=2023.3
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Utilities
+python-dotenv>=1.0.0
+colorlog>=6.7.0

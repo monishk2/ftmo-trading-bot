@@ -1,0 +1,27 @@
+{
+  "challenge": {
+    "profit_target_pct": 10.0,
+    "max_daily_loss_pct": 5.0,
+    "max_total_loss_pct": 10.0,
+    "min_trading_days": 4,
+    "time_limit_days": null
+  },
+  "verification": {
+    "profit_target_pct": 5.0,
+    "max_daily_loss_pct": 5.0,
+    "max_total_loss_pct": 10.0,
+    "min_trading_days": 4,
+    "time_limit_days": null
+  },
+  "funded": {
+    "profit_target_pct": null,
+    "max_daily_loss_pct": 5.0,
+    "max_total_loss_pct": 10.0,
+    "payout_split": 0.80,
+    "scaling_payout_split": 0.90
+  },
+  "safety_buffers": {
+    "daily_loss_trigger_pct": 4.0,
+    "total_loss_trigger_pct": 9.0
+  }
+}
