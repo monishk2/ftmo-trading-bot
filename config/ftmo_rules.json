@@ -23,5 +23,13 @@
   "safety_buffers": {
     "daily_loss_trigger_pct": 4.0,
     "total_loss_trigger_pct": 9.0
+  },
+  "guardian": {
+    "max_open_positions": 2,
+    "max_consecutive_losses": 3,
+    "max_risk_per_trade_pct": 1.0,
+    "weekend_close_hour": 16,
+    "use_higher_of_balance_equity": true,
+    "pip_value_per_lot": 10.0
   }
 }
