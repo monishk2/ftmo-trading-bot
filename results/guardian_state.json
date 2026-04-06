@@ -1,0 +1,15 @@
+{
+  "mode": "challenge",
+  "initial_balance": 10000.0,
+  "balance": 10000.0,
+  "equity": 10000.0,
+  "midnight_balance": 10000.0,
+  "midnight_equity": 10000.0,
+  "open_positions": 0,
+  "consecutive_losses": 0,
+  "daily_pnl": 0.0,
+  "daily_halted": false,
+  "permanently_halted": false,
+  "halt_reason": "",
+  "trading_day": "2026-04-06"
+}

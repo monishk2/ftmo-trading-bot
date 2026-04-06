@@ -219,7 +219,11 @@ class FVGRetracement(BaseStrategy):
         Forward-fill: the EMA value at 09:00 ET applies to all 15-min
         bars from 09:00 to 09:45.
         """
-        hourly = df["close"].resample("1h").last().dropna()
+        # Work in UTC to avoid DST-ambiguity errors during .floor()
+        df_utc = df.copy()
+        df_utc.index = df_utc.index.tz_convert("UTC")
+
+        hourly = df_utc["close"].resample("1h").last().dropna()
         if len(hourly) < self._ema_period:
             # Not enough history — return empty mapping (all NaN)
             logger.warning(
@@ -231,16 +235,16 @@ class FVGRetracement(BaseStrategy):
 
         ema_series = hourly.ewm(span=self._ema_period, adjust=False).mean()
 
-        # Map each 15-min timestamp to the nearest preceding 1H EMA value
+        # Map each original (ET) timestamp to the nearest preceding 1H EMA value.
+        # Floor and lookup both happen in UTC — no DST ambiguity possible.
         ema_map: dict = {}
         for ts in df.index:
-            # Floor to the current hour
-            floored = ts.floor("1h")
-            if floored in ema_series.index:
-                ema_map[ts] = ema_series[floored]
+            ts_utc = ts.tz_convert("UTC").floor("1h")
+            if ts_utc in ema_series.index:
+                ema_map[ts] = ema_series[ts_utc]
             else:
                 # Search backward for the last available hourly value
-                candidates = ema_series.index[ema_series.index <= ts]
+                candidates = ema_series.index[ema_series.index <= ts_utc]
                 if len(candidates):
                     ema_map[ts] = float(ema_series[candidates[-1]])
         return ema_map

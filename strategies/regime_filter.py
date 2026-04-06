@@ -107,7 +107,7 @@ class RegimeFilter:
         self._adx_ranging:         float = float(config["adx_ranging_threshold"])  # 20
 
         logger.info(
-            "RegimeFilter setup: ATR%ile hi=%.0f lo=%.0f dead=%.0f | ADX ranging=%.0f trending=%.0f",
+            "RegimeFilter setup: ATR%%ile hi=%.0f lo=%.0f dead=%.0f | ADX ranging=%.0f trending=%.0f",
             self._high_vol_pct, self._low_vol_pct, self._dead_atr_pct,
             self._adx_ranging, self._adx_trending,
         )

@@ -28,7 +28,7 @@
     "risk_reward_ratio": 2.0,
     "risk_per_trade_pct": 0.5,
     "max_trades_per_day": 1,
-    "max_candles_until_cancel": 8,
+    "max_candles_until_cancel": 36,
     "cancel_unfilled_hour": "12:00",
     "time_stop_hour": "16:00",
     "no_friday_trading": true,
