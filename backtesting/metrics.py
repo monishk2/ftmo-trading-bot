@@ -275,7 +275,7 @@ def _risk_adjusted(equity: pd.Series) -> Tuple[float, float]:
 
 def _monthly_returns(equity: pd.Series) -> pd.DataFrame:
     """Pivot table of monthly returns. Rows = year, Columns = month (1–12)."""
-    monthly = equity.resample("M").last()
+    monthly = equity.resample("ME").last()
     m_rets  = monthly.pct_change().dropna() * 100.0
     if m_rets.empty:
         return pd.DataFrame()

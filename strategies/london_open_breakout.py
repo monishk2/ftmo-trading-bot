@@ -54,12 +54,13 @@ from __future__ import annotations
 
 import logging
 from datetime import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
 from strategies.base_strategy import BaseStrategy
+from strategies.regime_filter import _compute_atr, _compute_adx
 
 logger = logging.getLogger(__name__)
 
@@ -103,13 +104,26 @@ class LondonOpenBreakout(BaseStrategy):
 
         self._pip_size = float(instrument_config["pip_size"])           # 0.0001
 
+        # ── Per-day regime gate (ATR percentile + H1 ADX) ─────────────
+        # Default False so unit tests (which pass minimal dicts) are unaffected;
+        # strategy_params.json sets this True for real runs.
+        self._regime_enabled  = bool(config.get("regime_filter_enabled", False))
+        self._regime_atr_per  = int(config.get("regime_atr_period",     14))
+        self._regime_lookback = int(config.get("regime_lookback_days",  60))
+        self._regime_atr_pct  = float(config.get("regime_atr_percentile", 60.0))
+        self._regime_adx_per  = int(config.get("regime_adx_period",     14))
+        self._regime_adx_min  = float(config.get("regime_adx_h1_min",   25.0))
+
         logger.info(
-            "%s setup: asian=%s–%s entry=%s–%s range=%.0f–%.0f pips rr=%.1f",
+            "%s setup: asian=%s–%s entry=%s–%s range=%.0f–%.0f pips rr=%.1f "
+            "regime_filter=%s (ATR>%.0fp%%ile, H1_ADX>%.0f)",
             self.name,
             self._asian_start, self._asian_end,
             self._entry_start, self._entry_end,
             self._min_range_pips, self._max_range_pips,
             self._rr_ratio,
+            "ON" if self._regime_enabled else "OFF",
+            self._regime_atr_pct, self._regime_adx_min,
         )
 
     # ------------------------------------------------------------------ #
@@ -135,10 +149,28 @@ class LondonOpenBreakout(BaseStrategy):
         df["asian_high"]        = np.nan
         df["asian_low"]         = np.nan
         df["asian_range_pips"]  = np.nan
+        df["regime_atr_pct"]    = np.nan   # ATR percentile at session open
+        df["regime_adx_h1"]     = np.nan   # H1 ADX(14) at session open
+        df["regime_filtered"]   = False    # True = day skipped by regime gate
 
-        # Group by calendar date in Eastern time (the index is already Eastern)
+        # Pre-compute regime pass/fail map for every date in the dataset.
+        # Empty dict when filter is disabled — _process_day treats missing
+        # date keys as "pass".
+        regime_map: dict = self._compute_regime_maps(df) if self._regime_enabled else {}
+
+        n_filtered = 0
         for date, day_df in df.groupby(df.index.date):
-            self._process_day(df, day_df, date)
+            filtered = self._process_day(df, day_df, date, regime_map)
+            if filtered:
+                n_filtered += 1
+
+        if self._regime_enabled:
+            total_days  = len(df.groupby(df.index.date))
+            logger.info(
+                "%s regime filter: %d/%d trading days filtered out (%.0f%%)",
+                self.name, n_filtered, total_days,
+                100.0 * n_filtered / total_days if total_days else 0,
+            )
 
         return df
 
@@ -151,14 +183,31 @@ class LondonOpenBreakout(BaseStrategy):
         full_df: pd.DataFrame,
         day_df: pd.DataFrame,
         date,
-    ) -> None:
-        """Compute Asian range + scan entry window for one trading day."""
+        regime_map: Optional[dict] = None,
+    ) -> bool:
+        """
+        Compute Asian range + scan entry window for one trading day.
 
+        Returns True if the day was skipped by the regime filter, False otherwise.
+        """
         # Rule 9: skip Fridays
         # day_df.index[0] is a tz-aware Timestamp — .weekday() == 4 is Friday
         if self._no_friday and day_df.index[0].weekday() == 4:
             logger.debug("Skipping Friday %s", date)
-            return
+            return False
+
+        # ── Regime gate (ATR percentile + H1 ADX) ─────────────────────
+        if regime_map is not None and date in regime_map:
+            rd = regime_map[date]
+            full_df.loc[day_df.index, "regime_atr_pct"] = rd["atr_pct"]
+            full_df.loc[day_df.index, "regime_adx_h1"]  = rd["adx"]
+            if not rd["pass"]:
+                full_df.loc[day_df.index, "regime_filtered"] = True
+                logger.debug(
+                    "Regime gate: skipping %s | ATR_pct=%.1f adx=%.1f",
+                    date, rd["atr_pct"], rd["adx"] if not np.isnan(rd["adx"]) else -1,
+                )
+                return True
 
         # ── Step 1: Build Asian range ──────────────────────────────────
         asian_bars = day_df[day_df.index.map(
@@ -167,7 +216,7 @@ class LondonOpenBreakout(BaseStrategy):
 
         if asian_bars.empty:
             logger.debug("No Asian bars on %s — skipping", date)
-            return
+            return False
 
         asian_high = float(asian_bars["high"].max())
         asian_low  = float(asian_bars["low"].min())
@@ -184,13 +233,13 @@ class LondonOpenBreakout(BaseStrategy):
                 "%s Asian range %.1f pips < min %.0f — skip",
                 date, range_pips, self._min_range_pips,
             )
-            return
+            return False
         if range_pips > self._max_range_pips:
             logger.debug(
                 "%s Asian range %.1f pips > max %.0f — skip",
                 date, range_pips, self._max_range_pips,
             )
-            return
+            return False
 
         # ── Step 3: Pre-compute breakout levels ───────────────────────
         buffer_price  = self._entry_buffer * self._pip_size
@@ -256,3 +305,100 @@ class LondonOpenBreakout(BaseStrategy):
                     ts, close, sl_price, tp_price,
                     range_pips, asian_low, asian_high,
                 )
+
+        return False  # day processed (not filtered)
+
+    # ------------------------------------------------------------------ #
+    # Regime indicator pre-computation                                     #
+    # ------------------------------------------------------------------ #
+
+    def _compute_regime_maps(self, df: pd.DataFrame) -> dict:
+        """
+        Pre-compute per-day ATR-percentile and H1 ADX for the full dataset.
+
+        Returns
+        -------
+        dict  {date -> {"atr_pct": float, "adx": float, "pass": bool}}
+
+        "pass" is True when BOTH:
+          ATR(14) daily > _regime_atr_pct-th percentile of prior _regime_lookback days
+          H1 ADX(14) at session open >= _regime_adx_min
+        Days with insufficient history default to pass=True (no filter).
+        """
+        result: dict = {}
+
+        # ── Daily ATR ─────────────────────────────────────────────────
+        # Resample in UTC to avoid DST boundary issues
+        df_utc = df.copy()
+        df_utc.index = df_utc.index.tz_convert("UTC")
+
+        daily = df_utc.resample("D").agg(
+            {"open": "first", "high": "max", "low": "min", "close": "last"}
+        ).dropna(subset=["open", "close"])
+
+        atr_series = _compute_atr(daily, self._regime_atr_per)
+        daily_atr: dict = {
+            ts.date(): float(v)
+            for ts, v in atr_series.items()
+            if not (isinstance(v, float) and np.isnan(v))
+        }
+        sorted_dates = sorted(daily_atr.keys())
+
+        # ── H1 ADX ────────────────────────────────────────────────────
+        hourly_df = pd.DataFrame({
+            "high":  df_utc["high"].resample("1h").max(),
+            "low":   df_utc["low"].resample("1h").min(),
+            "close": df_utc["close"].resample("1h").last(),
+        }).dropna()
+
+        adx_h1 = _compute_adx(hourly_df, self._regime_adx_per)  # Series | None
+
+        # For each date, find the UTC timestamp of the session open H1 bar
+        # (first ET bar at or after entry_start, floored to 1h in UTC)
+        open_utc_by_date: dict = {}
+        for date, day_df in df.groupby(df.index.date):
+            entry_bars = [
+                ts for ts in day_df.index
+                if _bar_open_time(ts) >= self._entry_start
+                and _bar_open_time(ts) < self._entry_end
+            ]
+            if entry_bars:
+                open_utc_by_date[date] = entry_bars[0].tz_convert("UTC").floor("1h")
+
+        # ── Build result dict ─────────────────────────────────────────
+        min_history = max(self._regime_atr_per, 10)
+
+        for i, date in enumerate(sorted_dates):
+            start_idx  = max(0, i - self._regime_lookback)
+            prior_atrs = [daily_atr[d] for d in sorted_dates[start_idx:i]]
+
+            # Insufficient history → don't filter
+            if len(prior_atrs) < min_history:
+                result[date] = {"atr_pct": float("nan"), "adx": float("nan"), "pass": True}
+                continue
+
+            today_atr   = daily_atr[date]
+            atr_pct_val = float(np.sum(np.array(prior_atrs) < today_atr) / len(prior_atrs) * 100.0)
+            atr_pass    = atr_pct_val >= self._regime_atr_pct
+
+            # H1 ADX at session open
+            adx_val:  Optional[float] = None
+            adx_pass: bool            = True   # pass by default if ADX unavailable
+
+            if adx_h1 is not None and date in open_utc_by_date:
+                open_utc = open_utc_by_date[date]
+                # Last available H1 bar at or before session open
+                candidates = adx_h1.index[adx_h1.index <= open_utc]
+                if len(candidates) > 0:
+                    raw = float(adx_h1.loc[candidates[-1]])
+                    if not np.isnan(raw):
+                        adx_val  = raw
+                        adx_pass = adx_val >= self._regime_adx_min
+
+            result[date] = {
+                "atr_pct": round(atr_pct_val, 1),
+                "adx":     adx_val if adx_val is not None else float("nan"),
+                "pass":    atr_pass and adx_pass,
+            }
+
+        return result

@@ -7,13 +7,19 @@
     "timezone": "US/Eastern",
     "min_asian_range_pips": 20,
     "max_asian_range_pips": 40,
-    "entry_buffer_pips": 2,
+    "entry_buffer_pips": 3,
     "risk_reward_ratio": 2.0,
-    "risk_per_trade_pct": 0.75,
+    "risk_per_trade_pct": 0.5,
     "max_trades_per_day": 1,
     "time_stop_hour": "12:00",
     "no_friday_trading": true,
-    "instruments": ["EURUSD", "GBPUSD"]
+    "instruments": ["EURUSD", "GBPUSD"],
+    "regime_filter_enabled": true,
+    "regime_atr_period": 14,
+    "regime_lookback_days": 60,
+    "regime_atr_percentile": 60.0,
+    "regime_adx_period": 14,
+    "regime_adx_h1_min": 25.0
   },
   "fvg_retracement": {
     "fvg_scan_start": "03:00",

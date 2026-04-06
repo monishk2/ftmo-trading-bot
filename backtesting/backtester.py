@@ -142,6 +142,8 @@ class Backtester:
         initial_balance: float = 10_000.0,
         phase: str = "challenge",
         seed: int = 42,
+        break_even_r: Optional[float] = None,
+        trail_atr_mult: Optional[float] = None,
         _override_instrument_config: Optional[Dict] = None,
         _override_ftmo_rules: Optional[Dict] = None,
     ) -> None:
@@ -150,6 +152,9 @@ class Backtester:
         self.initial_balance = initial_balance
         self.phase = phase
         self.rng = np.random.default_rng(seed)
+        # Optional trade-management overlays (both default to None = disabled)
+        self.break_even_r   = break_even_r    # move SL to entry+1pip once +N×R hit
+        self.trail_atr_mult = trail_atr_mult  # trail at N×ATR(14) after +1.5R hit
 
         self._load_configs(_override_instrument_config, _override_ftmo_rules)
         self.df = self._prepare_data(df)
@@ -225,6 +230,7 @@ class Backtester:
         if sl_pips < 0.01:
             return 0.01
         lot = risk_usd / (sl_pips * PIP_VALUE_PER_LOT)
+        lot = min(lot, 50.0)   # hard cap: never more than 50 lots on one trade
         return max(0.01, round(lot, 2))
 
     # ------------------------------------------------------------------
@@ -235,6 +241,102 @@ class Backtester:
         """Unrealised P&L in USD (commission excluded, charged only on close)."""
         pnl_pips = pos["direction"] * (close - pos["entry_price"]) / self.pip_size
         return pnl_pips * PIP_VALUE_PER_LOT * pos["lot_size"]
+
+    # ------------------------------------------------------------------
+    # Trade-management helpers (break-even / trailing stop)
+    # ------------------------------------------------------------------
+
+    def _compute_atr14(self, df: pd.DataFrame) -> pd.Series:
+        """
+        Wilder ATR(14) using the same ta-library call as regime_filter.py.
+        Returns a Series aligned to df.index.
+        """
+        import ta  # lazy import — only needed when trail_atr_mult is set
+        atr_indicator = ta.volatility.AverageTrueRange(
+            high=df["high"], low=df["low"], close=df["close"],
+            window=14, fillna=False,
+        )
+        return atr_indicator.average_true_range()
+
+    @staticmethod
+    def _atr_at(atr_series: pd.Series, ts: pd.Timestamp) -> float:
+        """Return ATR at ts; fall back to most recent non-NaN value."""
+        if ts in atr_series.index:
+            val = float(atr_series[ts])
+            if not np.isnan(val):
+                return val
+        candidates = atr_series.dropna()
+        candidates = candidates[candidates.index <= ts]
+        return float(candidates.iloc[-1]) if len(candidates) else float(atr_series.dropna().iloc[0])
+
+    def _update_sl_for_management(
+        self,
+        pos: Dict,
+        row,
+        atr_series: Optional[pd.Series],
+        ts: pd.Timestamp,
+    ) -> None:
+        """
+        Mutates pos["sl"] in-place for break-even and trailing-stop logic.
+        Called every bar while a position is open, *before* the SL/TP check.
+
+        Break-even rule
+        ---------------
+        Once the bar's extreme touches break_even_r × original_sl_dist from
+        entry, the SL is moved to entry + 1 pip (in trade direction).
+        The SL can only move in the favourable direction — never worsened.
+
+        Trailing-stop rule
+        ------------------
+        Activates when price first reaches +1.5R from entry.
+        After activation, the SL trails trail_atr_mult × ATR(14) behind the
+        running extreme (highest high for longs, lowest low for shorts).
+        Again, the SL can only move in the favourable direction.
+        """
+        direction = pos["direction"]
+        sl        = pos["sl"]
+        orig_dist = pos["original_sl_dist"]   # |entry - original_sl|
+        ep        = pos["entry_price"]
+
+        # ── Break-even ────────────────────────────────────────────────────
+        if self.break_even_r is not None and not pos["be_triggered"]:
+            be_target = ep + direction * orig_dist * self.break_even_r
+            hit = (
+                (direction ==  1 and row["high"] >= be_target) or
+                (direction == -1 and row["low"]  <= be_target)
+            )
+            if hit:
+                be_sl = ep + direction * self.pip_size   # entry + 1 pip
+                if (direction == 1 and be_sl > sl) or (direction == -1 and be_sl < sl):
+                    pos["sl"] = be_sl
+                    sl = be_sl
+                pos["be_triggered"] = True
+
+        # ── Trailing stop ─────────────────────────────────────────────────
+        if self.trail_atr_mult is not None and atr_series is not None:
+            trail_target = ep + direction * orig_dist * 1.5
+
+            if not pos["trail_active"]:
+                activated = (
+                    (direction ==  1 and row["high"] >= trail_target) or
+                    (direction == -1 and row["low"]  <= trail_target)
+                )
+                if activated:
+                    pos["trail_active"]   = True
+                    pos["trail_extreme"]  = row["high"] if direction == 1 else row["low"]
+
+            if pos["trail_active"]:
+                atr_val = self._atr_at(atr_series, ts)
+                if direction == 1:
+                    pos["trail_extreme"] = max(pos["trail_extreme"], row["high"])
+                    new_sl = pos["trail_extreme"] - self.trail_atr_mult * atr_val
+                    if new_sl > pos["sl"]:
+                        pos["sl"] = new_sl
+                else:
+                    pos["trail_extreme"] = min(pos["trail_extreme"], row["low"])
+                    new_sl = pos["trail_extreme"] + self.trail_atr_mult * atr_val
+                    if new_sl < pos["sl"]:
+                        pos["sl"] = new_sl
 
     def _close_position(
         self,
@@ -302,6 +404,11 @@ class Backtester:
         """Execute the backtest. Returns a BacktestResult."""
         df = self.strategy.generate_signals(self.df.copy())
 
+        # Pre-compute ATR(14) for trailing stop (None if feature not enabled)
+        atr_series: Optional[pd.Series] = (
+            self._compute_atr14(df) if self.trail_atr_mult is not None else None
+        )
+
         balance   = self.initial_balance
         trades:   List[Trade] = []
         eq_curve: Dict[pd.Timestamp, float] = {}
@@ -361,10 +468,14 @@ class Backtester:
                 eq_curve[ts] = balance
                 break
 
+            # ── Break-even / trailing: update SL before the exit check ──
+            if open_pos and (self.break_even_r is not None or self.trail_atr_mult is not None):
+                self._update_sl_for_management(open_pos, row, atr_series, ts)
+
             # ── Check open position for SL / TP / time-stop ─────────────
             if open_pos:
                 direction = open_pos["direction"]
-                sl, tp    = open_pos["sl"], open_pos["tp"]
+                sl, tp    = open_pos["sl"], open_pos["tp"]  # read after potential SL update
 
                 exit_price:  Optional[float] = None
                 exit_reason: Optional[str]   = None
@@ -403,6 +514,22 @@ class Backtester:
                 if not (np.isnan(sl_price) or np.isnan(tp_price)):
                     entry_price = self._calc_entry_price(row["close"], signal, ts)
 
+                    # Guard: SL must be on the correct side of entry.
+                    # For LONG: sl < entry.  For SHORT: sl > entry.
+                    # If violated (e.g. bar punched through a FVG zone and
+                    # closed beyond the SL), skip — position sizing would
+                    # explode and the trade has no valid risk-reward geometry.
+                    sl_on_wrong_side = (
+                        (signal == 1  and sl_price >= entry_price) or
+                        (signal == -1 and sl_price <= entry_price)
+                    )
+                    if sl_on_wrong_side:
+                        logger.debug(
+                            "Skipping signal at %s: SL %.5f on wrong side of "
+                            "entry %.5f (direction=%d)", ts, sl_price, entry_price, signal
+                        )
+                        continue
+
                     raw_lot  = self._get_float(row, "lot_size")
                     lot_size = (
                         self._auto_lot_size(balance, entry_price, sl_price)
@@ -411,14 +538,19 @@ class Backtester:
                     )
 
                     open_pos = {
-                        "entry_time":      ts,
-                        "direction":       signal,
-                        "entry_price":     entry_price,
-                        "sl":              sl_price,
-                        "tp":              tp_price,
-                        "lot_size":        lot_size,
+                        "entry_time":       ts,
+                        "direction":        signal,
+                        "entry_price":      entry_price,
+                        "sl":               sl_price,
+                        "tp":               tp_price,
+                        "lot_size":         lot_size,
                         "balance_at_entry": balance,
-                        "time_stop":       self._get_timestamp(row, "time_stop"),
+                        "time_stop":        self._get_timestamp(row, "time_stop"),
+                        # trade-management state
+                        "original_sl_dist": abs(entry_price - sl_price),
+                        "be_triggered":     False,
+                        "trail_active":     False,
+                        "trail_extreme":    entry_price,
                     }
                     logger.debug(
                         "%s %s | entry=%.5f sl=%.5f tp=%.5f lots=%.2f @ %s",

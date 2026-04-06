@@ -1,0 +1,439 @@
+{
+  "strategy_name": "london_breakout",
+  "instrument": "EURUSD",
+  "windows": [
+    {
+      "window_idx": 0,
+      "is_start": "2020-01",
+      "is_end": "2020-07",
+      "oos_start": "2020-07",
+      "oos_end": "2020-10",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 1.1165,
+      "is_return_pct": 3.655,
+      "is_trades": 45,
+      "oos_sharpe": -0.3117,
+      "oos_return_pct": -0.689,
+      "oos_trades": 37,
+      "degradation_ratio": -0.2792
+    },
+    {
+      "window_idx": 1,
+      "is_start": "2020-04",
+      "is_end": "2020-10",
+      "oos_start": "2020-10",
+      "oos_end": "2021-01",
+      "best_params": {
+        "min_asian_range_pips": 25,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 0.925,
+      "is_return_pct": 1.7029,
+      "is_trades": 21,
+      "oos_sharpe": -2.1107,
+      "oos_return_pct": -0.8911,
+      "oos_trades": 3,
+      "degradation_ratio": -2.2818
+    },
+    {
+      "window_idx": 2,
+      "is_start": "2020-07",
+      "is_end": "2021-01",
+      "oos_start": "2021-01",
+      "oos_end": "2021-04",
+      "best_params": {
+        "min_asian_range_pips": 20,
+        "entry_buffer_pips": 2,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": -0.0354,
+      "is_return_pct": -0.4403,
+      "is_trades": 38,
+      "oos_sharpe": 0.6814,
+      "oos_return_pct": 1.2918,
+      "oos_trades": 20,
+      "degradation_ratio": -19.2445
+    },
+    {
+      "window_idx": 3,
+      "is_start": "2020-10",
+      "is_end": "2021-04",
+      "oos_start": "2021-04",
+      "oos_end": "2021-07",
+      "best_params": {
+        "min_asian_range_pips": 20,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 0.412,
+      "is_return_pct": 1.1282,
+      "is_trades": 30,
+      "oos_sharpe": 2.3543,
+      "oos_return_pct": 2.0193,
+      "oos_trades": 10,
+      "degradation_ratio": 5.7143
+    },
+    {
+      "window_idx": 4,
+      "is_start": "2021-01",
+      "is_end": "2021-07",
+      "oos_start": "2021-07",
+      "oos_end": "2021-10",
+      "best_params": {
+        "min_asian_range_pips": 20,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 2.2245,
+      "is_return_pct": 5.9008,
+      "is_trades": 26,
+      "oos_sharpe": 0.7926,
+      "oos_return_pct": 0.7918,
+      "oos_trades": 3,
+      "degradation_ratio": 0.3563
+    },
+    {
+      "window_idx": 5,
+      "is_start": "2021-04",
+      "is_end": "2021-10",
+      "oos_start": "2021-10",
+      "oos_end": "2022-01",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 1.1538,
+      "is_return_pct": 1.7834,
+      "is_trades": 26,
+      "oos_sharpe": -2.3544,
+      "oos_return_pct": -2.043,
+      "oos_trades": 19,
+      "degradation_ratio": -2.0405
+    },
+    {
+      "window_idx": 6,
+      "is_start": "2021-07",
+      "is_end": "2022-01",
+      "oos_start": "2022-01",
+      "oos_end": "2022-04",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": -0.6113,
+      "is_return_pct": -2.3912,
+      "is_trades": 40,
+      "oos_sharpe": 2.4354,
+      "oos_return_pct": 7.4083,
+      "oos_trades": 37,
+      "degradation_ratio": -3.9842
+    },
+    {
+      "window_idx": 7,
+      "is_start": "2021-10",
+      "is_end": "2022-04",
+      "oos_start": "2022-04",
+      "oos_end": "2022-07",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 1.1094,
+      "is_return_pct": 7.1746,
+      "is_trades": 62,
+      "oos_sharpe": -1.4223,
+      "oos_return_pct": -5.3506,
+      "oos_trades": 37,
+      "degradation_ratio": -1.282
+    },
+    {
+      "window_idx": 8,
+      "is_start": "2022-01",
+      "is_end": "2022-07",
+      "oos_start": "2022-07",
+      "oos_end": "2022-10",
+      "best_params": {
+        "min_asian_range_pips": 20,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 1.4378,
+      "is_return_pct": 7.7767,
+      "is_trades": 39,
+      "oos_sharpe": 2.5394,
+      "oos_return_pct": 7.7032,
+      "oos_trades": 27,
+      "degradation_ratio": 1.7662
+    },
+    {
+      "window_idx": 9,
+      "is_start": "2022-04",
+      "is_end": "2022-10",
+      "oos_start": "2022-10",
+      "oos_end": "2023-01",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 1.9047,
+      "is_return_pct": 9.7327,
+      "is_trades": 66,
+      "oos_sharpe": -0.6611,
+      "oos_return_pct": -1.674,
+      "oos_trades": 35,
+      "degradation_ratio": -0.3471
+    },
+    {
+      "window_idx": 10,
+      "is_start": "2022-07",
+      "is_end": "2023-01",
+      "oos_start": "2023-01",
+      "oos_end": "2023-04",
+      "best_params": {
+        "min_asian_range_pips": 25,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 1.9989,
+      "is_return_pct": 9.0454,
+      "is_trades": 48,
+      "oos_sharpe": -1.05,
+      "oos_return_pct": -1.2773,
+      "oos_trades": 8,
+      "degradation_ratio": -0.5253
+    },
+    {
+      "window_idx": 11,
+      "is_start": "2022-10",
+      "is_end": "2023-04",
+      "oos_start": "2023-04",
+      "oos_end": "2023-07",
+      "best_params": {
+        "min_asian_range_pips": 25,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 1.6084,
+      "is_return_pct": 8.7039,
+      "is_trades": 34,
+      "oos_sharpe": 1.5547,
+      "oos_return_pct": 2.2224,
+      "oos_trades": 4,
+      "degradation_ratio": 0.9666
+    },
+    {
+      "window_idx": 12,
+      "is_start": "2023-01",
+      "is_end": "2023-07",
+      "oos_start": "2023-07",
+      "oos_end": "2023-10",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 2.2105,
+      "is_return_pct": 13.4652,
+      "is_trades": 74,
+      "oos_sharpe": 0.1666,
+      "oos_return_pct": 0.3181,
+      "oos_trades": 30,
+      "degradation_ratio": 0.0754
+    },
+    {
+      "window_idx": 13,
+      "is_start": "2023-04",
+      "is_end": "2023-10",
+      "oos_start": "2023-10",
+      "oos_end": "2024-01",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 2.1422,
+      "is_return_pct": 8.0079,
+      "is_trades": 69,
+      "oos_sharpe": 1.3517,
+      "oos_return_pct": 2.1063,
+      "oos_trades": 25,
+      "degradation_ratio": 0.631
+    },
+    {
+      "window_idx": 14,
+      "is_start": "2023-07",
+      "is_end": "2024-01",
+      "oos_start": "2024-01",
+      "oos_end": "2024-04",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 0.9984,
+      "is_return_pct": 7.275,
+      "is_trades": 65,
+      "oos_sharpe": 1.1586,
+      "oos_return_pct": 3.8182,
+      "oos_trades": 31,
+      "degradation_ratio": 1.1605
+    },
+    {
+      "window_idx": 15,
+      "is_start": "2023-10",
+      "is_end": "2024-04",
+      "oos_start": "2024-04",
+      "oos_end": "2024-07",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 1.7479,
+      "is_return_pct": 12.5171,
+      "is_trades": 59,
+      "oos_sharpe": 0.9481,
+      "oos_return_pct": 2.528,
+      "oos_trades": 25,
+      "degradation_ratio": 0.5424
+    },
+    {
+      "window_idx": 16,
+      "is_start": "2024-01",
+      "is_end": "2024-07",
+      "oos_start": "2024-07",
+      "oos_end": "2024-10",
+      "best_params": {
+        "min_asian_range_pips": 10,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 1.089,
+      "is_return_pct": 4.9043,
+      "is_trades": 56,
+      "oos_sharpe": -1.1448,
+      "oos_return_pct": -2.3438,
+      "oos_trades": 25,
+      "degradation_ratio": -1.0513
+    },
+    {
+      "window_idx": 17,
+      "is_start": "2024-04",
+      "is_end": "2024-10",
+      "oos_start": "2024-10",
+      "oos_end": "2025-01",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 1.5932,
+      "is_return_pct": 1.664,
+      "is_trades": 20,
+      "oos_sharpe": 0.8372,
+      "oos_return_pct": 1.0622,
+      "oos_trades": 19,
+      "degradation_ratio": 0.5255
+    },
+    {
+      "window_idx": 18,
+      "is_start": "2024-07",
+      "is_end": "2025-01",
+      "oos_start": "2025-01",
+      "oos_end": "2025-04",
+      "best_params": {
+        "min_asian_range_pips": 15,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 1.0
+      },
+      "is_sharpe": 1.9378,
+      "is_return_pct": 10.2455,
+      "is_trades": 32,
+      "oos_sharpe": -2.1315,
+      "oos_return_pct": -7.112,
+      "oos_trades": 31,
+      "degradation_ratio": -1.1
+    },
+    {
+      "window_idx": 19,
+      "is_start": "2024-10",
+      "is_end": "2025-04",
+      "oos_start": "2025-04",
+      "oos_end": "2025-07",
+      "best_params": {
+        "min_asian_range_pips": 20,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.75
+      },
+      "is_sharpe": 0.6672,
+      "is_return_pct": 2.2481,
+      "is_trades": 31,
+      "oos_sharpe": -1.6772,
+      "oos_return_pct": -3.9106,
+      "oos_trades": 26,
+      "degradation_ratio": -2.5138
+    },
+    {
+      "window_idx": 20,
+      "is_start": "2025-01",
+      "is_end": "2025-07",
+      "oos_start": "2025-07",
+      "oos_end": "2025-10",
+      "best_params": {
+        "min_asian_range_pips": 30,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.5
+      },
+      "is_sharpe": 1.1529,
+      "is_return_pct": 2.094,
+      "is_trades": 21,
+      "oos_sharpe": -0.0479,
+      "oos_return_pct": -0.0431,
+      "oos_trades": 3,
+      "degradation_ratio": -0.0415
+    }
+  ],
+  "avg_degradation_ratio": -1.093,
+  "recommended_params": {
+    "entry_buffer_pips": 5,
+    "min_asian_range_pips": 20,
+    "risk_per_trade_pct": 1.0
+  },
+  "is_robust": false,
+  "overfitting_warning": true,
+  "grid_used": {
+    "min_asian_range_pips": [
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50
+    ],
+    "entry_buffer_pips": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "risk_per_trade_pct": [
+      0.5,
+      0.75,
+      1.0
+    ]
+  },
+  "initial_balance": 10000.0
+}

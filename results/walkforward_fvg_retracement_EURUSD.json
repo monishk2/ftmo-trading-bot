@@ -1,0 +1,401 @@
+{
+  "strategy_name": "fvg_retracement",
+  "instrument": "EURUSD",
+  "windows": [
+    {
+      "window_idx": 0,
+      "is_start": "2020-01",
+      "is_end": "2021-01",
+      "oos_start": "2021-01",
+      "oos_end": "2021-04",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.7723,
+      "is_return_pct": -3.3037,
+      "is_trades": 18,
+      "oos_sharpe": -2.2118,
+      "oos_return_pct": -1.423,
+      "oos_trades": 3,
+      "degradation_ratio": 2.864
+    },
+    {
+      "window_idx": 1,
+      "is_start": "2020-04",
+      "is_end": "2021-04",
+      "oos_start": "2021-04",
+      "oos_end": "2021-07",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.25,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -1.2327,
+      "is_return_pct": -1.8974,
+      "is_trades": 20,
+      "oos_sharpe": -1.9144,
+      "oos_return_pct": -0.6666,
+      "oos_trades": 7,
+      "degradation_ratio": 1.5529
+    },
+    {
+      "window_idx": 2,
+      "is_start": "2020-07",
+      "is_end": "2021-07",
+      "oos_start": "2021-07",
+      "oos_end": "2021-10",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.5,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -1.3834,
+      "is_return_pct": -4.3386,
+      "is_trades": 20,
+      "oos_sharpe": 0.0,
+      "oos_return_pct": 0.0,
+      "oos_trades": 0,
+      "degradation_ratio": -0.0
+    },
+    {
+      "window_idx": 3,
+      "is_start": "2020-10",
+      "is_end": "2021-10",
+      "oos_start": "2021-10",
+      "oos_end": "2022-01",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.5,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -1.0197,
+      "is_return_pct": -5.4774,
+      "is_trades": 14,
+      "oos_sharpe": 2.7678,
+      "oos_return_pct": 1.1101,
+      "oos_trades": 3,
+      "degradation_ratio": -2.7143
+    },
+    {
+      "window_idx": 4,
+      "is_start": "2021-01",
+      "is_end": "2022-01",
+      "oos_start": "2022-01",
+      "oos_end": "2022-04",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.25,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.6446,
+      "is_return_pct": -0.5639,
+      "is_trades": 13,
+      "oos_sharpe": 0.0,
+      "oos_return_pct": 0.0,
+      "oos_trades": 0,
+      "degradation_ratio": -0.0
+    },
+    {
+      "window_idx": 5,
+      "is_start": "2021-04",
+      "is_end": "2022-04",
+      "oos_start": "2022-04",
+      "oos_end": "2022-07",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.3218,
+      "is_return_pct": -6.9244,
+      "is_trades": 11,
+      "oos_sharpe": 2.3126,
+      "oos_return_pct": 3.6856,
+      "oos_trades": 5,
+      "degradation_ratio": -7.1857
+    },
+    {
+      "window_idx": 6,
+      "is_start": "2021-07",
+      "is_end": "2022-07",
+      "oos_start": "2022-07",
+      "oos_end": "2022-10",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 1.734,
+      "is_return_pct": 8.9078,
+      "is_trades": 9,
+      "oos_sharpe": -2.2395,
+      "oos_return_pct": -1.7182,
+      "oos_trades": 6,
+      "degradation_ratio": -1.2915
+    },
+    {
+      "window_idx": 7,
+      "is_start": "2021-10",
+      "is_end": "2022-10",
+      "oos_start": "2022-10",
+      "oos_end": "2023-01",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.25,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 1.309,
+      "is_return_pct": 0.8073,
+      "is_trades": 15,
+      "oos_sharpe": -0.3244,
+      "oos_return_pct": -0.0975,
+      "oos_trades": 5,
+      "degradation_ratio": -0.2478
+    },
+    {
+      "window_idx": 8,
+      "is_start": "2022-01",
+      "is_end": "2023-01",
+      "oos_start": "2023-01",
+      "oos_end": "2023-04",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.9935,
+      "is_return_pct": 5.5924,
+      "is_trades": 16,
+      "oos_sharpe": -0.9788,
+      "oos_return_pct": -0.5179,
+      "oos_trades": 2,
+      "degradation_ratio": -0.9852
+    },
+    {
+      "window_idx": 9,
+      "is_start": "2022-04",
+      "is_end": "2023-04",
+      "oos_start": "2023-04",
+      "oos_end": "2023-07",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 1.0,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.8894,
+      "is_return_pct": 6.673,
+      "is_trades": 18,
+      "oos_sharpe": 2.6198,
+      "oos_return_pct": 1.7991,
+      "oos_trades": 4,
+      "degradation_ratio": 2.9457
+    },
+    {
+      "window_idx": 10,
+      "is_start": "2022-07",
+      "is_end": "2023-07",
+      "oos_start": "2023-07",
+      "oos_end": "2023-10",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.5,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.6743,
+      "is_return_pct": 4.0924,
+      "is_trades": 17,
+      "oos_sharpe": 0.0,
+      "oos_return_pct": 0.0,
+      "oos_trades": 0,
+      "degradation_ratio": 0.0
+    },
+    {
+      "window_idx": 11,
+      "is_start": "2022-10",
+      "is_end": "2023-10",
+      "oos_start": "2023-10",
+      "oos_end": "2024-01",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.7958,
+      "is_return_pct": 12.2359,
+      "is_trades": 11,
+      "oos_sharpe": 0.5462,
+      "oos_return_pct": 0.9111,
+      "oos_trades": 3,
+      "degradation_ratio": 0.6864
+    },
+    {
+      "window_idx": 12,
+      "is_start": "2023-01",
+      "is_end": "2024-01",
+      "oos_start": "2024-01",
+      "oos_end": "2024-04",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.2419,
+      "is_return_pct": 0.5234,
+      "is_trades": 9,
+      "oos_sharpe": -2.3665,
+      "oos_return_pct": -1.5233,
+      "oos_trades": 2,
+      "degradation_ratio": -9.7825
+    },
+    {
+      "window_idx": 13,
+      "is_start": "2023-04",
+      "is_end": "2024-04",
+      "oos_start": "2024-04",
+      "oos_end": "2024-07",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.25,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.0547,
+      "is_return_pct": -0.1575,
+      "is_trades": 9,
+      "oos_sharpe": 0.0322,
+      "oos_return_pct": 0.0066,
+      "oos_trades": 2,
+      "degradation_ratio": 0.5879
+    },
+    {
+      "window_idx": 15,
+      "is_start": "2023-10",
+      "is_end": "2024-10",
+      "oos_start": "2024-10",
+      "oos_end": "2025-01",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.6182,
+      "is_return_pct": -2.9411,
+      "is_trades": 10,
+      "oos_sharpe": 0.0381,
+      "oos_return_pct": 0.0242,
+      "oos_trades": 4,
+      "degradation_ratio": -0.0617
+    },
+    {
+      "window_idx": 16,
+      "is_start": "2024-01",
+      "is_end": "2025-01",
+      "oos_start": "2025-01",
+      "oos_end": "2025-04",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 1,
+        "risk_per_trade_pct": 0.25,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.829,
+      "is_return_pct": -1.9495,
+      "is_trades": 11,
+      "oos_sharpe": -3.5999,
+      "oos_return_pct": -1.3086,
+      "oos_trades": 7,
+      "degradation_ratio": 4.3424
+    },
+    {
+      "window_idx": 17,
+      "is_start": "2024-04",
+      "is_end": "2025-04",
+      "oos_start": "2025-04",
+      "oos_end": "2025-07",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 1.0,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": -0.9615,
+      "is_return_pct": -4.7359,
+      "is_trades": 16,
+      "oos_sharpe": 1.7085,
+      "oos_return_pct": 115.8355,
+      "oos_trades": 4,
+      "degradation_ratio": -1.7769
+    },
+    {
+      "window_idx": 18,
+      "is_start": "2024-07",
+      "is_end": "2025-07",
+      "oos_start": "2025-07",
+      "oos_end": "2025-10",
+      "best_params": {
+        "min_fvg_size_pips": 5,
+        "entry_buffer_pips": 3,
+        "risk_per_trade_pct": 0.75,
+        "max_candles_until_cancel": 20
+      },
+      "is_sharpe": 0.8261,
+      "is_return_pct": 69.8538,
+      "is_trades": 18,
+      "oos_sharpe": -0.4658,
+      "oos_return_pct": -0.3101,
+      "oos_trades": 2,
+      "degradation_ratio": -0.5639
+    }
+  ],
+  "avg_degradation_ratio": -0.6461,
+  "recommended_params": {
+    "entry_buffer_pips": 5,
+    "max_candles_until_cancel": 20,
+    "min_fvg_size_pips": 5,
+    "risk_per_trade_pct": 0.75
+  },
+  "is_robust": false,
+  "overfitting_warning": true,
+  "grid_used": {
+    "min_fvg_size_pips": [
+      5,
+      10,
+      15,
+      20
+    ],
+    "entry_buffer_pips": [
+      1,
+      3,
+      5
+    ],
+    "risk_per_trade_pct": [
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "max_candles_until_cancel": [
+      8,
+      12,
+      16,
+      20
+    ]
+  },
+  "initial_balance": 10000.0
+}

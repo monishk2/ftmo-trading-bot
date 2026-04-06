@@ -83,15 +83,18 @@ _CONFIG_DIR = Path(__file__).parent.parent / "config"
 _LONDON_GRID = {
     "min_asian_range_pips": [10, 15, 20, 25, 30, 35, 40, 45, 50],
     "entry_buffer_pips":    [1, 2, 3, 4, 5],
-    "risk_reward_ratio":    [1.5, 2.0, 2.5, 3.0],
     "risk_per_trade_pct":   [0.5, 0.75, 1.0],
+    # risk_reward_ratio fixed at base-config value (2.0) — not part of this search
 }
 
 _FVG_GRID = {
-    "min_fvg_size_pips":  [3, 5, 8, 10],
-    "entry_buffer_pips":  [1, 2, 3, 5],
-    "risk_reward_ratio":  [1.5, 2.0, 2.5, 3.0],
-    "risk_per_trade_pct": [0.5, 0.75, 1.0],
+    # Prompt 13 refined grid: 4×3×4×4 = 192 combos (~60–90 min on EURUSD 15m)
+    "min_fvg_size_pips":        [5, 10, 15, 20],           # pip size of the gap
+    "entry_buffer_pips":        [1, 3, 5],                  # SL pad beyond zone edge
+    "risk_per_trade_pct":       [0.25, 0.5, 0.75, 1.0],    # account % risked
+    "max_candles_until_cancel": [8, 12, 16, 20],            # patience before cancel
+    # risk_reward_ratio fixed at base-config value (2.0)
+    # entry_window_start/end fixed (09:30–12:00 ET)
 }
 
 
@@ -511,6 +514,71 @@ def _print_summary(result: WalkForwardResult, verbose: bool) -> None:
     print()
     print(f"Recommended parameters:  {result.recommended_params}")
     print("=" * 76)
+
+    # FVG-specific: max_candles_until_cancel analysis
+    strat = result.strategy_name.lower().replace(" ", "_")
+    if strat in ("fvg_retracement", "fvg"):
+        _analyze_max_candles_effect(result.windows)
+
+
+def _analyze_max_candles_effect(windows: List[WindowResult]) -> None:
+    """
+    For FVG strategy: group windows by the max_candles_until_cancel value
+    chosen by IS optimisation, then show avg OOS Sharpe per group.
+
+    Flags if candles > 12 shows meaningfully better OOS performance —
+    suggesting that early London-session FVGs (which need more time to
+    reach the NY-open entry window) carry real edge.
+    """
+    from collections import defaultdict
+
+    groups: dict = defaultdict(list)
+    for w in windows:
+        mc = w.best_params.get("max_candles_until_cancel")
+        if mc is not None:
+            groups[int(mc)].append(w.oos_sharpe)
+
+    if not groups:
+        return
+
+    print()
+    print("  max_candles_until_cancel — intra-session FVG analysis")
+    print(f"  {'candles':>8}  {'windows':>7}  {'avg OOS Sharpe':>14}  {'pos. OOS':>8}")
+    print(f"  {'-------':>8}  {'-------':>7}  {'---------------':>14}  {'--------':>8}")
+
+    mc_avg: dict = {}
+    for mc in sorted(groups.keys()):
+        sharpes = groups[mc]
+        avg     = float(np.mean(sharpes)) if sharpes else float("nan")
+        n_pos   = sum(1 for s in sharpes if s > 0)
+        mc_avg[mc] = avg
+        print(f"  {mc:>8}  {len(sharpes):>7}  {avg:>14.3f}  {n_pos:>5}/{len(sharpes)}")
+
+    # Compare short (≤12) vs long (>12) cancellation
+    short_vals = [v for k, v in mc_avg.items() if k <= 12 and not np.isnan(v)]
+    long_vals  = [v for k, v in mc_avg.items() if k >  12 and not np.isnan(v)]
+    short_avg  = float(np.mean(short_vals)) if short_vals else float("nan")
+    long_avg   = float(np.mean(long_vals))  if long_vals  else float("nan")
+
+    print()
+    if not np.isnan(long_avg) and not np.isnan(short_avg):
+        diff = long_avg - short_avg
+        if diff > 0.10:
+            print(
+                f"  ⚑  INTRA-SESSION BENEFIT: max_candles > 12 outperforms ≤12 by "
+                f"{diff:+.3f} avg OOS Sharpe ({long_avg:.3f} vs {short_avg:.3f}).\n"
+                f"     Early London-session FVGs (forming 03:00–05:30 ET) carry edge\n"
+                f"     when allowed time to reach the 09:30 NY entry window.\n"
+                f"     Recommended: keep max_candles_until_cancel >= 16."
+            )
+        else:
+            print(
+                f"  ✓  No clear intra-session benefit from max_candles > 12 "
+                f"(diff = {diff:+.3f}).\n"
+                f"     Tight cancellation (8–12 candles) performs comparably;\n"
+                f"     consider favouring smaller values to avoid stale entries."
+            )
+    print()
 
 
 # ---------------------------------------------------------------------------

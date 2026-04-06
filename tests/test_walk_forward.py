@@ -145,10 +145,11 @@ class TestExpandGrid:
         assert all("a" in d and "b" in d for d in result)
 
     def test_london_grid_size(self):
-        """Full production grid: 9×5×4×3 = 540 combos."""
+        """Production grid (Prompt 12): min_range×buffer×risk = 9×5×3 = 135 combos."""
         from backtesting.walk_forward import _LONDON_GRID
         result = _expand_grid(_LONDON_GRID)
-        assert len(result) == 9 * 5 * 4 * 3
+        # 9 min_asian_range_pips × 5 entry_buffer_pips × 3 risk_per_trade_pct
+        assert len(result) == 9 * 5 * 3
 
     def test_fvg_grid_size(self):
         """FVG grid: 4×4×4×3 = 192 combos."""
