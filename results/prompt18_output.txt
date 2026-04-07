@@ -1,0 +1,190 @@
+Prompt 18: M15 Diagnosis + London Risk Uplift
+venv Python 3.13.2 | pandas 3.0.2
+  Pre-computing H4 EMA200 slope…
+
+  Running V1…
+  Running V2…
+  Running V3…
+  Running V4…
+
+========================================================================
+  PART A1 — M15 Diagnostic Variants (EURUSD)
+========================================================================
+
+  Variant                                    T    WR%     Ret%      Sh    DD%     PF   T/mo   AvgW$   AvgL$
+  --------------------------------------  ----  -----  -------  ------  -----  -----  -----  ------  ------
+  V1: No BE, full 2020-2025                527   38.7    -9.11%  -0.189  15.97%  0.940    8.0  $70.01  $47.04
+  V2: No BE, start Jul 2020                462   37.9   -13.21%  -0.327  16.46%  0.899    7.6  $67.29  $45.63
+  V3: V1 + H4 EMA200 slope filter          273   44.3   +10.80%  +0.332  11.34%  1.130    4.4  $77.53  $54.61
+  V4: V3 + session 07:00-16:00 ET          277   44.8   +13.85%  +0.403  11.50%  1.159    4.4  $81.46  $56.96
+
+  FTMO breach count (3-month windows, official 5%/10% limits):
+    V1: 0 breaches  (24 windows)
+    V2: 0 breaches  (22 windows)
+    V3: 0 breaches  (24 windows)
+    V4: 0 breaches  (24 windows)
+
+  V1 Monthly returns (%):
+     Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec    Ann
+  2019      —      —      —      —      —      —      —      —      —      —      —   +0.0    +0.0%
+  2020   -2.9   +0.3   -0.1   -0.5   +0.0   +4.2   +1.4   -1.0   +0.9   +0.0   -0.3   -2.1    -0.3%
+  2021   +1.3   -1.5   +0.9   +0.0   +2.3   -1.4   -1.0   +0.0   -0.3   -3.3   +0.6   +4.0    +1.4%
+  2022   +0.8   -3.3   +0.0   +1.3   +0.3   -3.0   -1.1   -1.0   +1.7   +0.7   -1.2   -0.2    -5.1%
+  2023   +0.0   -0.3   -0.1   -1.0   +0.9   -1.3   -0.0   +1.8   -0.2   +1.3   -3.2   +0.1    -2.0%
+  2024   +0.3   +2.6   +0.3   -1.3   +2.2   -3.5   -1.1   -1.2   +2.5   +0.2   -1.4   -1.9    -2.4%
+  2025   -1.3   -3.2   +3.4   +2.5   +0.5   -1.0   +0.9   +0.0   -2.6   -0.5   +0.0   +0.7    -0.9%
+
+========================================================================
+  PART A1 — V1 Trade Analytics (MFE / Duration / Exit types)
+========================================================================
+
+  Exit breakdown (V1, n=527):
+    sl          :  292  (55%)
+    tp          :  150  (28%)
+    time_stop   :   85  (16%)
+
+  MFE analysis (Maximum Favorable Excursion in R):
+    Median MFE:   0.96R
+    Mean MFE:     1.26R
+    MFE < 0.5R:    151  (29%)
+    0.5R≤MFE<1R:   120  (23%)
+    1R≤MFE<2R:     146  (28%)
+    MFE ≥ 2R:      110  (21%)
+
+  → Median MFE 0.96R is borderline (0.8–1.2R)
+
+  Trade duration (bars) distribution:
+    Median: 5 bars  (75 min)
+    Mean:   5.6 bars  (83 min)
+    p25: 3 bars (45 min)
+    p50: 5 bars (75 min)
+    p75: 7 bars (105 min)
+    p90: 12 bars (180 min)
+
+  Big-move cooldown check:
+    % of losing trades entered within 3 bars of >2×ATR bar: 16.7%
+    → <60%: cooldown filter NOT strongly indicated
+
+========================================================================
+  PART A2 — Pullback Logic Audit (last 20 EURUSD signals from 2024)
+========================================================================
+
+  #    Datetime (ET)           Dir        Entry      EMA9     EMA21     EMA50    RSI  Dist21p       ATR  Outcome        
+  ----------------------------------------------------------------------------------------------------------------------------------
+  1    2024-11-14 10:30:00-05  LONG     1.05647   1.05543   1.05440   1.05435   63.8     20.7   0.00123  time_stop        $-20.04
+  2    2024-11-18 08:15:00-05  LONG     1.05569   1.05473   1.05466   1.05448   60.4     10.3   0.00075  tp               $80.27
+  3    2024-11-19 10:30:00-05  LONG     1.05940   1.05815   1.05770   1.05767   60.3     17.0   0.00124  sl               $-48.85
+  4    2024-11-19 12:00:00-05  LONG     1.05882   1.05828   1.05798   1.05781   56.0      8.4   0.00117  sl               $-48.41
+  5    2024-11-20 07:00:00-05  SHORT    1.05532   1.05535   1.05615   1.05735   35.2      8.3   0.00074  sl               $-48.93
+  6    2024-11-21 07:00:00-05  SHORT    1.05218   1.05223   1.05268   1.05344   43.0      5.0   0.00075  sl               $-48.35
+  7    2024-11-21 13:00:00-05  SHORT    1.04868   1.04886   1.05016   1.05167   37.0     14.8   0.00114  time_stop        $14.71
+  8    2024-11-25 10:15:00-05  LONG     1.05135   1.05087   1.05005   1.04868   58.8     13.0   0.00127  sl               $-47.50
+  9    2024-11-26 07:00:00-05  LONG     1.05233   1.05134   1.05032   1.04917   64.5     20.1   0.00104  tp               $82.52
+  10   2024-11-26 12:00:00-05  SHORT    1.04700   1.04808   1.04907   1.04928   38.0     20.7   0.00133  time_stop        $-17.47
+  11   2024-11-27 07:00:00-05  LONG     1.05248   1.05208   1.05133   1.05019   62.1     11.5   0.00095  tp               $82.99
+  12   2024-11-27 12:30:00-05  LONG     1.05789   1.05715   1.05582   1.05358   63.9     20.7   0.00132  sl               $-48.26
+  13   2024-11-28 09:15:00-05  SHORT    1.05379   1.05412   1.05436   1.05465   42.2      5.7   0.00079  sl               $-48.65
+  14   2024-12-02 07:45:00-05  SHORT    1.05009   1.05166   1.05176   1.05250   37.2     16.7   0.00108  sl               $-47.92
+  15   2024-12-02 12:30:00-05  SHORT    1.04859   1.04859   1.04905   1.05043   45.0      4.6   0.00123  time_stop        $-18.66
+  16   2024-12-03 09:30:00-05  LONG     1.05208   1.05207   1.05176   1.05107   54.7      3.2   0.00077  sl               $-48.21
+  17   2024-12-03 12:00:00-05  LONG     1.05210   1.05139   1.05139   1.05107   55.2      7.1   0.00095  sl               $-47.28
+  18   2024-12-05 07:30:00-05  LONG     1.05330   1.05308   1.05298   1.05260   54.0      3.2   0.00075  tp               $78.40
+  19   2024-12-19 08:15:00-05  LONG     1.04070   1.04029   1.04028   1.04009   55.2      4.2   0.00099  sl               $-48.00
+  20   2024-12-19 12:00:00-05  SHORT    1.03649   1.03762   1.03867   1.03937   35.8     21.8   0.00117  sl               $-47.27
+
+========================================================================
+  PART A3 — Walk-Forward Decision
+========================================================================
+
+  No variant qualifies (needs Sharpe > 0.2 AND trades/month >= 10).
+  Variant summary:
+    V1: Sharpe=-0.189 ✗  T/mo=8.0 ✗
+    V2: Sharpe=-0.327 ✗  T/mo=7.6 ✗
+    V3: Sharpe=+0.332 ✓  T/mo=4.4 ✗
+    V4: Sharpe=+0.403 ✓  T/mo=4.4 ✗
+
+  → M15 Momentum Scalping is DEAD in current form.
+     Do not run WF. Required fixes before next attempt:
+     1. Add H4 EMA200 trend filter (directional alignment)
+     2. Wider session window 07:00–16:00 ET
+     3. Cooldown after >2×ATR momentum bars
+     4. Consider entry on first H1 pullback (not M15 granularity)
+
+========================================================================
+  PART B — London Risk Uplift Scenarios
+========================================================================
+
+  Running S1 (baseline)…
+
+  Running S2 (robust uplift)…
+
+  Running S3 (aggressive)…
+
+  Metric                          S1 (baseline)           S2 (robust uplift)      S3 (aggressive)       
+  ------------------------------  ----------------------  ----------------------  ----------------------
+  Avg monthly return              +0.597%                 +0.751%                 +0.852%               
+  CAGR                            +7.30%                  +9.18%                  +10.38%               
+  Total return                    +52.64%                 +69.35%                 +80.87%               
+  Sharpe ratio                    +0.974                  +0.982                  +0.961                
+  Max intraday DD                 6.61%                   8.17%                   10.07%                
+  Worst daily loss                -2.221%                 -2.700%                 -3.085%               
+  Days to +10%                    310                     294                     294                   
+  Positive months                 49                      48                      47                    
+
+  FTMO breach counts (24 rolling 3-month windows):
+    S1 (baseline)           : 0 total  (daily=0  maxDD=0)  pass rate=8.3%
+    S2 (robust uplift)      : 0 total  (daily=0  maxDD=0)  pass rate=8.3%
+    S3 (aggressive)         : 0 total  (daily=0  maxDD=0)  pass rate=8.3%
+
+  Selection criteria: 0 FTMO breaches AND worst_daily_loss > -3.5%
+
+  ✓ BEST SCENARIO: S3 (aggressive)
+    Avg monthly return: +0.852%
+    CAGR:               +10.38%
+    Sharpe:             +0.961
+    Max DD:             10.07%
+    Worst daily loss:   -3.085%
+    Days to +10%:       294
+
+    Optimal risk per trade:
+      EURUSD      : 1.2%
+      GBPUSD      : 1.2%
+      EURJPY      : 1.0%
+      GBPJPY      : 0.5%
+      AUDUSD      : 0.3%
+      USDJPY      : 0.5%
+      NY_EURUSD   : 0.5%
+
+  S3 (aggressive) Monthly returns (%):
+     Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec    Ann
+  2019      —      —      —      —      —      —      —      —      —      —      —   +0.0    +0.0%
+  2020   -5.8   +3.3   +3.1   +1.2   +0.0   -2.3   -3.5   -1.7  +13.1   +3.9   -1.7   -2.2    +6.3%
+  2021   +1.0   +1.2   -2.0   -0.1   -2.0   +5.2   +0.6   +0.2   +2.8   +2.2   -3.7   +1.2    +6.5%
+  2022   +1.3   +0.9   +9.8   +1.7   +3.7   -1.2   -1.3   +0.5   -0.1   +7.6   -0.2   +0.6   +25.2%
+  2023   +0.0   +1.0   -0.9   +3.0   +0.5   -0.0   +2.3   +0.5   +0.5   +3.0   +0.8   +4.1   +15.9%
+  2024   +1.2   +0.6   +0.1   -1.0   -0.0   -0.2   +0.8   -0.3   +2.1   -1.6   +1.8   +0.3    +3.8%
+  2025   -1.4   +3.1   +2.0   -2.6   +2.2   +0.1   +2.1   -0.9   -2.6   +1.1   +1.4   +1.7    +6.2%
+
+========================================================================
+  CONTEXT SUMMARY (Prompt 18 deliverables)
+========================================================================
+
+  1. Best M15 variant: V4  Sharpe=+0.403  T/mo=4.4
+     ✗ Does NOT qualify for WF (needs Sharpe>0.2 AND T/mo>=10)
+
+  2. MFE median (V1): 0.96R  → Borderline (0.8–1.2R)
+
+  3. Pullback entries after extended moves: 16.7% of losers  → NOT a dominant pattern
+
+  4. Best London risk scenario: S3 (aggressive)
+     Avg monthly return: +0.852%
+     CAGR: +10.38%
+
+  5. M15 walk-forward: DEAD — no variant qualifies
+
+  6. Combined best-case avg monthly return (London S3 (aggressive)): +0.852%
+     (+M15 if viable — currently M15 not viable)
+
+  Total runtime: 2.7 minutes
+
+Done.

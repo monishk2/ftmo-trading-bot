@@ -9,17 +9,50 @@
     "max_asian_range_pips": 40,
     "entry_buffer_pips": 3,
     "risk_reward_ratio": 2.0,
-    "risk_per_trade_pct": 0.5,
+    "risk_per_trade_pct": 0.7,
+    "break_even_r": 1.0,
     "max_trades_per_day": 1,
     "time_stop_hour": "12:00",
     "no_friday_trading": true,
-    "instruments": ["EURUSD", "GBPUSD"],
+    "instruments": ["EURUSD", "GBPUSD", "EURJPY", "GBPJPY", "AUDUSD", "USDJPY"],
     "regime_filter_enabled": true,
     "regime_atr_period": 14,
     "regime_lookback_days": 60,
     "regime_atr_percentile": 60.0,
     "regime_adx_period": 14,
-    "regime_adx_h1_min": 25.0
+    "regime_adx_h1_min": 25.0,
+    "instrument_overrides": {
+      "EURUSD": {
+        "risk_per_trade_pct": 1.2
+      },
+      "GBPUSD": {
+        "risk_per_trade_pct": 1.2
+      },
+      "EURJPY": {
+        "min_asian_range_pips": 40,
+        "max_asian_range_pips": 120,
+        "entry_buffer_pips": 7,
+        "risk_per_trade_pct": 1.0
+      },
+      "GBPJPY": {
+        "min_asian_range_pips": 30,
+        "max_asian_range_pips": 120,
+        "entry_buffer_pips": 7,
+        "risk_per_trade_pct": 0.5
+      },
+      "AUDUSD": {
+        "min_asian_range_pips": 15,
+        "max_asian_range_pips": 80,
+        "entry_buffer_pips": 2,
+        "risk_per_trade_pct": 0.3
+      },
+      "USDJPY": {
+        "min_asian_range_pips": 15,
+        "max_asian_range_pips": 80,
+        "entry_buffer_pips": 5,
+        "risk_per_trade_pct": 0.5
+      }
+    }
   },
   "fvg_retracement": {
     "fvg_scan_start": "03:00",
@@ -41,6 +74,77 @@
     "ema_period": 200,
     "ema_timeframe": "1H",
     "instruments": ["EURUSD", "GBPUSD"]
+  },
+  "ny_session_breakout": {
+    "asian_range_start": "02:00",
+    "asian_range_end": "09:15",
+    "entry_window_start": "09:30",
+    "entry_window_end": "11:00",
+    "timezone": "US/Eastern",
+    "min_asian_range_pips": 30,
+    "max_asian_range_pips": 100,
+    "entry_buffer_pips": 3,
+    "risk_reward_ratio": 2.0,
+    "risk_per_trade_pct": 0.5,
+    "break_even_r": 1.0,
+    "max_trades_per_day": 1,
+    "time_stop_hour": "14:00",
+    "no_friday_trading": true,
+    "instruments": ["EURUSD"],
+    "regime_filter_enabled": true,
+    "regime_atr_period": 14,
+    "regime_lookback_days": 60,
+    "regime_atr_percentile": 60.0,
+    "regime_adx_period": 14,
+    "regime_adx_h1_min": 25.0
+  },
+  "m15_momentum_scalping": {
+    "london_session_start": "07:00",
+    "london_session_end":   "12:00",
+    "ny_session_start":     "12:00",
+    "ny_session_end":       "15:00",
+    "timezone": "US/Eastern",
+    "ema_fast":  9,
+    "ema_slow":  21,
+    "ema_trend": 50,
+    "rsi_period":    14,
+    "rsi_long_min":  45,
+    "rsi_long_max":  65,
+    "atr_period":    14,
+    "atr_tp_mult":   2.0,
+    "atr_sl_mult":   1.0,
+    "pullback_atr_mult":       1.5,
+    "pullback_lookback_bars":  3,
+    "atr_percentile_lookback": 20,
+    "atr_percentile_min":      60.0,
+    "risk_per_trade_pct": 0.5,
+    "break_even_r": 1.0,
+    "no_friday_trading": true,
+    "instruments": ["EURUSD", "GBPUSD", "EURJPY", "USDJPY"],
+    "regime_filter_enabled": true,
+    "regime_atr_period": 14,
+    "regime_lookback_days": 60,
+    "regime_atr_percentile": 60.0,
+    "regime_adx_period": 14,
+    "regime_adx_h1_min": 25.0
+  },
+  "h1_trend_following": {
+    "session_start": "03:00",
+    "session_end": "16:00",
+    "timezone": "US/Eastern",
+    "ema_fast": 20,
+    "ema_slow": 50,
+    "h4_ema_period": 50,
+    "h4_slope_lookback": 3,
+    "atr_period": 14,
+    "atr_tp_mult": 2.0,
+    "atr_sl_mult": 1.5,
+    "atr_percentile_lookback": 20,
+    "atr_percentile_min": 50.0,
+    "pullback_lookback_bars": 3,
+    "risk_per_trade_pct": 0.5,
+    "no_friday_trading": true,
+    "instruments": ["EURUSD", "GBPUSD", "EURJPY", "USDJPY"]
   },
   "regime_filter": {
     "atr_period": 14,

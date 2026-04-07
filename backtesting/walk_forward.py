@@ -97,6 +97,33 @@ _FVG_GRID = {
     # entry_window_start/end fixed (09:30–12:00 ET)
 }
 
+_NY_GRID = {
+    # NY Session breakout — vary range width and buffer only
+    # (range window 02:00–09:15 ET is fixed; entry window 09:30–11:00 ET is fixed)
+    "min_asian_range_pips": [20, 25, 30, 35, 40, 50],
+    "entry_buffer_pips":    [1, 2, 3, 4, 5],
+    "risk_per_trade_pct":   [0.5, 0.7, 1.0],
+}
+
+_M15_GRID = {
+    # M15 Momentum Scalping — 2×2×3×3×3×2 = 216 combinations
+    "ema_fast":           [9, 12],
+    "ema_slow":           [21, 26],
+    "rsi_long_min":       [40, 45, 50],
+    "rsi_long_max":       [60, 65, 70],
+    "atr_tp_mult":        [1.5, 2.0, 2.5],
+    "risk_per_trade_pct": [0.5, 0.7],
+}
+
+_H1_GRID = {
+    # H1 Trend Following — 2×2×3×3×2 = 72 combinations
+    "ema_fast":           [20, 26],
+    "ema_slow":           [50, 60],
+    "atr_tp_mult":        [1.5, 2.0, 2.5],
+    "atr_sl_mult":        [1.0, 1.5, 2.0],
+    "risk_per_trade_pct": [0.5, 0.7],
+}
+
 
 # ---------------------------------------------------------------------------
 # Data containers
@@ -147,6 +174,8 @@ def run_walk_forward(
     min_trades: int = 20,
     phase: str = "challenge",
     verbose: bool = True,
+    param_grid: Optional[Dict[str, List]] = None,
+    base_config_overrides: Optional[Dict] = None,
 ) -> WalkForwardResult:
     """
     Execute walk-forward optimisation.
@@ -183,9 +212,30 @@ def run_walk_forward(
         grid = _FVG_GRID
         _build_strategy = _build_fvg_strategy
         _base_config    = _load_fvg_base_config()
+    elif strat_lower in ("ny_session_breakout", "ny_session", "ny_breakout"):
+        grid = _NY_GRID
+        _build_strategy = _build_ny_strategy
+        _base_config    = _load_ny_base_config()
+    elif strat_lower in ("m15_momentum_scalping", "m15_momentum", "m15"):
+        grid = _M15_GRID
+        _build_strategy = _build_m15_strategy
+        _base_config    = _load_m15_base_config()
+    elif strat_lower in ("h1_trend_following", "h1_trend", "h1"):
+        grid = _H1_GRID
+        _build_strategy = _build_h1_strategy
+        _base_config    = _load_h1_base_config()
     else:
         raise ValueError(f"Unknown strategy: {strategy_name!r}. "
-                         "Use 'london_breakout' or 'fvg_retracement'.")
+                         "Use 'london_breakout', 'fvg_retracement', 'ny_session_breakout', "
+                         "'m15_momentum_scalping', or 'h1_trend_following'.")
+
+    # Caller-supplied grid takes precedence over the strategy-default grid
+    if param_grid is not None:
+        grid = param_grid
+
+    # Caller-supplied config overrides (e.g. max_asian_range_pips floor for JPY pairs)
+    if base_config_overrides:
+        _base_config = {**_base_config, **base_config_overrides}
 
     instrument_cfg = _load_instrument_config(instrument)
     param_combos   = list(_expand_grid(grid))
@@ -394,6 +444,11 @@ def _load_fvg_base_config() -> Dict:
         return json.load(fh)["fvg_retracement"]
 
 
+def _load_ny_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["ny_session_breakout"]
+
+
 def _load_instrument_config(instrument: str) -> Dict:
     with open(_CONFIG_DIR / "instruments.json") as fh:
         return json.load(fh)[instrument]
@@ -416,6 +471,47 @@ def _build_fvg_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
     from strategies.fvg_retracement import FVGRetracement
     cfg = {**base_cfg, **params}
     s = FVGRetracement()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _build_ny_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.ny_session_breakout import NYSessionBreakout
+    cfg = {**base_cfg, **params}
+    cfg["max_asian_range_pips"] = max(
+        params["min_asian_range_pips"] * 2,
+        float(base_cfg.get("max_asian_range_pips", 100)),
+    )
+    s = NYSessionBreakout()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_h1_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["h1_trend_following"]
+
+
+def _build_h1_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.h1_trend_following import H1TrendFollowing
+    cfg = {**base_cfg, **params}
+    s = H1TrendFollowing()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_m15_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["m15_momentum_scalping"]
+
+
+def _build_m15_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.m15_momentum_scalping import M15MomentumScalping
+    cfg = {**base_cfg, **params}
+    # Enforce RSI short = mirror of RSI long (not in grid, derived)
+    cfg["rsi_short_min"] = 100.0 - cfg.get("rsi_long_max", 65)
+    cfg["rsi_short_max"] = 100.0 - cfg.get("rsi_long_min", 45)
+    s = M15MomentumScalping()
     s.setup(cfg, instrument_cfg)
     return s
 

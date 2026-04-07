@@ -1,0 +1,89 @@
+Prompt 19: H1 Trend-Following Layer + Lock S3 Risk
+venv Python 3.13.2 | pandas 3.0.2
+
+========================================================================
+  TASK 0 — S3 Baseline Verification
+========================================================================
+
+  Running London 7-strategy portfolio (S3 risk, Jan 2020 → Apr 2025)…
+
+  S3 Baseline Results:
+    Avg monthly return : +0.896%  (expected ~+0.852%)
+    CAGR               : +10.72%  (expected ~+10.4%)
+    Total return       : +84.15%
+    Max intraday DD    : 11.92%
+    Worst daily return : -3.047%
+    FTMO breaches      : 0  (24 windows)
+    → S3 baseline CONFIRMED ✓
+
+========================================================================
+  TASK 2 — H1 Baseline Validation (Jul 2020 → Apr 2025)
+========================================================================
+
+  Pairs: ['EURUSD', 'GBPUSD', 'EURJPY', 'USDJPY']  |  Period: 2020-07-01 → Apr 2025
+  Running EURUSD…
+  Running GBPUSD…
+  Running EURJPY…
+  Running USDJPY…
+
+  Pair         T  T/mo   WR%   AvgW$   AvgL$    PF    Ret%     Sh    DD%
+  ----------------------------------------------------------------------
+  EURUSD     775  11.7  45.2    49.1    42.8 0.945   -9.98% -0.241  15.55%
+  GBPUSD     764  11.6  44.1    41.2    37.1 0.875  -19.77% -0.549  28.23%
+  EURJPY     127   2.5  39.4    34.7    33.6 0.671   -8.51% -1.119  10.11%
+  USDJPY     111   2.4  42.3    30.6    33.2 0.676   -6.90% -1.005   9.61%
+
+  FTMO breach counts (3-month windows, official 5%/10% limits):
+    EURUSD: 0 breaches  (22 windows)
+    GBPUSD: 0 breaches  (22 windows)
+    EURJPY: 0 breaches  (19 windows)
+    USDJPY: 0 breaches  (19 windows)
+
+  T/mo threshold = 8/pair
+  ✓ Meeting threshold: ['EURUSD', 'GBPUSD']
+  ✗ Below threshold : [('EURJPY', '2.5'), ('USDJPY', '2.4')]
+
+  Total T/mo across 4 pairs: 28.2  (threshold: 25)
+
+  Pairs eligible for WF (Sharpe > 0.1): []
+
+========================================================================
+  TASK 3 — Walk-Forward Validation
+========================================================================
+
+  No pairs eligible for WF (none with Sharpe > 0.1).
+
+  [TASK 4] WF failed — skipping combined portfolio.
+
+========================================================================
+  CONTEXT SUMMARY
+========================================================================
+
+  1. S3 baseline confirmed (London 7-strat):
+     Expected: avg monthly ~+0.852%, CAGR ~10.4%, 0 FTMO breaches
+     → See Task 0 output above for actual verification numbers
+
+  2. H1 trades/month per pair:
+     EURUSD: 11.7/mo  Sharpe=-0.241  ✓
+     GBPUSD: 11.6/mo  Sharpe=-0.549  ✓
+     EURJPY: 2.5/mo  Sharpe=-1.119  ✗
+     USDJPY: 2.4/mo  Sharpe=-1.005  ✗
+
+  3. H1 walk-forward result:
+     No WF run (no eligible pairs).
+
+  4. Best combined portfolio avg monthly return:
+     London S3 only: +0.852%/month  (H1 not viable)
+
+  5. H1 WF status:
+     FAIL — no pair passed WF.
+
+  6. Strategy ceiling assessment:
+     VERDICT: Intraday trend/momentum strategies have NO validated edge
+     on this dataset (M15 Momentum failed Prompt 17-18, H1 Trend failed Prompt 19).
+     Realistic ceiling = London S3 at ~+0.852%/month (~+10.4% CAGR).
+     FTMO +10% challenge target requires ~294 days at this pace.
+
+  Total runtime: 1.0 minutes
+
+Done.
