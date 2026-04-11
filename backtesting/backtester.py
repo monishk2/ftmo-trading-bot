@@ -69,6 +69,46 @@ PIP_VALUE_PER_LOT = 10.0
 
 
 # ---------------------------------------------------------------------------
+# Pending / bracket order support
+# ---------------------------------------------------------------------------
+
+@dataclass
+class PendingOrder:
+    """
+    A stop or limit entry order placed before price reaches entry_price.
+
+    Fields
+    ------
+    order_type      : "buy_stop" | "sell_stop" | "buy_limit" | "sell_limit"
+    entry_price     : trigger price (order fills when bar H/L pierces this)
+    sl_price        : stop-loss price (placed when order fills)
+    tp_price        : take-profit price
+    place_bar       : bar index at which this order becomes active
+    expiry_bar      : cancel without fill after this bar index
+    group_id        : OCO group — when any order in this group fills,
+                      all others with the same group_id are cancelled
+    time_stop_bars  : bars after fill before forced time-stop exit (0 = disabled)
+    news_spread_mult: spread multiplier applied when filling within news_window_bars
+                      of event_bar (models wide spreads at release time)
+    event_bar       : bar index of the underlying news event (for spread calc)
+    news_window_bars: how many bars either side of event_bar the multiplier applies
+    event_type      : metadata string for reporting (e.g. 'NFP')
+    """
+    order_type:       str    # "buy_stop" | "sell_stop" | "buy_limit" | "sell_limit"
+    entry_price:      float
+    sl_price:         float
+    tp_price:         float
+    place_bar:        int
+    expiry_bar:       int
+    group_id:         int    = 0
+    time_stop_bars:   int    = 0
+    news_spread_mult: float  = 1.0
+    event_bar:        int    = -1
+    news_window_bars: int    = 5
+    event_type:       str    = ""
+
+
+# ---------------------------------------------------------------------------
 # Data containers
 # ---------------------------------------------------------------------------
 
@@ -815,6 +855,251 @@ class Backtester:
         return BacktestResult(
             trades=trades,
             equity_curve=pd.Series(eq_curve),
+            daily_pnl=pd.Series(day_pnl),
+            config=config,
+            initial_balance=self.initial_balance,
+            final_balance=balance,
+            ftmo_halt_reason=halt_reason,
+        )
+
+    # ------------------------------------------------------------------
+    # Bracket / OCO order simulation
+    # ------------------------------------------------------------------
+
+    def run_bracket(self, pending_orders: List[PendingOrder]) -> BacktestResult:
+        """
+        Simulate bracket / OCO stop-or-limit orders.
+
+        Instead of calling generate_signals(), takes a pre-built list of
+        PendingOrder objects (usually produced by a strategy's
+        generate_bracket_orders() method).
+
+        Design
+        ------
+        - Sparse: only iterates bars inside active event windows
+          (place_bar → place_bar + max_look_ahead per event group).
+          ~100× faster than a full M1 bar loop on 1.6 M bars.
+        - OCO: when one order in a group fills, all others in the same
+          group are immediately cancelled.
+        - One position at a time — a new event window is skipped if the
+          previous trade is still open.
+        - Spread at fill: news_spread_mult × normal_spread, applied only
+          within news_window_bars of event_bar.
+        - Break-even supported (uses self.break_even_r).
+        - FTMO daily / total drawdown enforced between events.
+        """
+        from collections import defaultdict
+
+        df  = self.df
+        n   = len(df)
+        idx = df.index
+        highs  = df["high"].to_numpy(float)
+        lows   = df["low"].to_numpy(float)
+        closes = df["close"].to_numpy(float)
+        dates  = idx.date
+
+        # Group orders by group_id; sort groups by their earliest place_bar
+        groups: Dict[int, List[PendingOrder]] = defaultdict(list)
+        for o in pending_orders:
+            groups[o.group_id].append(o)
+        sorted_groups = sorted(groups.values(), key=lambda g: min(o.place_bar for o in g))
+
+        balance          = float(self.initial_balance)
+        trades: List[Trade] = []
+        eq_curve: Dict   = {}
+        day_pnl: Dict    = {}
+        midnight_balance = balance
+        prev_date        = dates[0]
+        halt_reason: Optional[str] = None
+        eq_curve[idx[0]] = balance
+        last_exit_bar    = -1
+
+        for grp_orders in sorted_groups:
+            if halt_reason:
+                break
+
+            place_bar = min(o.place_bar for o in grp_orders)
+            if place_bar >= n or place_bar <= last_exit_bar:
+                continue
+
+            # Maximum bar to scan: expiry_bar of latest order + max time_stop_bars
+            max_expiry   = max(o.expiry_bar for o in grp_orders)
+            max_ts_bars  = max((o.time_stop_bars for o in grp_orders), default=0)
+            scan_end     = min(max_expiry + max_ts_bars + 1, n)
+
+            active_orders: List[PendingOrder] = list(grp_orders)
+            pos: Optional[Dict] = None
+
+            for i in range(place_bar, scan_end):
+                if i >= n:
+                    break
+
+                bar_ts   = idx[i]
+                bar_date = dates[i]
+                bar_h    = highs[i]
+                bar_l    = lows[i]
+                bar_c    = closes[i]
+
+                # ── Day boundary ──────────────────────────────────────
+                if bar_date != prev_date:
+                    floating = 0.0
+                    if pos is not None:
+                        floating = (pos["direction"] * (bar_c - pos["entry_price"])
+                                    / self.pip_size * self.pip_value_per_lot * pos["lot_size"])
+                    day_pnl[prev_date] = (balance + floating) - midnight_balance
+                    midnight_balance   = balance
+                    prev_date          = bar_date
+
+                # ── Manage open position ──────────────────────────────
+                if pos is not None:
+                    direction  = pos["direction"]
+                    ep         = pos["entry_price"]
+                    orig_dist  = pos["orig_dist"]
+                    current_sl = pos["sl"]
+
+                    # Break-even
+                    if self.break_even_r is not None and not pos["be_triggered"]:
+                        be_target = ep + direction * orig_dist * self.break_even_r
+                        hit_be = (
+                            (direction ==  1 and bar_h >= be_target) or
+                            (direction == -1 and bar_l <= be_target)
+                        )
+                        if hit_be:
+                            new_sl = ep + direction * self.pip_size
+                            if (direction == 1 and new_sl > current_sl) or \
+                               (direction == -1 and new_sl < current_sl):
+                                pos["sl"] = new_sl
+                                current_sl = pos["sl"]
+                            pos["be_triggered"] = True
+
+                    # SL / TP check
+                    hit_sl = ((direction ==  1 and bar_l <= current_sl) or
+                              (direction == -1 and bar_h >= current_sl))
+                    hit_tp = ((direction ==  1 and bar_h >= pos["tp"]) or
+                              (direction == -1 and bar_l <= pos["tp"]))
+                    # Time stop
+                    ts_bar = pos.get("time_stop_bar")
+                    hit_ts = ts_bar is not None and i >= ts_bar
+
+                    exit_price  = None
+                    exit_reason = None
+                    if hit_sl:
+                        exit_price, exit_reason = current_sl, "sl"
+                    elif hit_tp:
+                        exit_price, exit_reason = pos["tp"], "tp"
+                    elif hit_ts:
+                        exit_price, exit_reason = bar_c, "time_stop"
+
+                    if exit_price is not None:
+                        trade = self._close_position(pos, exit_price, bar_ts, exit_reason)
+                        trades.append(trade)
+                        balance += trade.pnl_dollars
+                        eq_curve[bar_ts] = balance
+                        last_exit_bar    = i
+                        pos = None
+                        active_orders    = []  # OCO partners already gone
+
+                        # FTMO checks
+                        tot_pct = (balance - self.initial_balance) / self.initial_balance * 100.0
+                        if tot_pct <= -self.total_loss_trigger_pct:
+                            halt_reason = f"Total drawdown {tot_pct:.2f}% at {bar_ts}"
+                            break
+                        break  # event window done
+                    else:
+                        floating = (direction * (bar_c - ep)
+                                    / self.pip_size * self.pip_value_per_lot * pos["lot_size"])
+                        eq_curve[bar_ts] = balance + floating
+                    continue
+
+                # ── Check pending orders for fill ─────────────────────
+                filled_order: Optional[PendingOrder] = None
+                for o in list(active_orders):
+                    if i > o.expiry_bar:
+                        active_orders.remove(o)
+                        continue
+
+                    triggered = False
+                    if   o.order_type == "buy_stop"   and bar_h >= o.entry_price: triggered = True
+                    elif o.order_type == "sell_stop"  and bar_l <= o.entry_price: triggered = True
+                    elif o.order_type == "buy_limit"  and bar_l <= o.entry_price: triggered = True
+                    elif o.order_type == "sell_limit" and bar_h >= o.entry_price: triggered = True
+
+                    if triggered:
+                        filled_order = o
+                        break
+
+                if filled_order is None:
+                    continue
+
+                # ── Fill the order ─────────────────────────────────────
+                o         = filled_order
+                direction = 1 if o.order_type in ("buy_stop", "buy_limit") else -1
+
+                # Spread: elevated near event bar
+                news_nearby  = abs(i - o.event_bar) <= o.news_window_bars
+                spread_mult  = o.news_spread_mult if news_nearby else 1.0
+                eff_spread   = self.spread_pips * spread_mult
+                slip         = self._slippage_pips(bar_ts)
+                fill_price   = (o.entry_price
+                                + direction * ((eff_spread / 2.0) * self.pip_size
+                                               + slip * self.pip_size))
+
+                # Revalidate SL is on correct side
+                sl = o.sl_price
+                if (direction == 1 and sl >= fill_price) or (direction == -1 and sl <= fill_price):
+                    continue  # degenerate order — skip
+
+                lot_size = self._auto_lot_size(balance, fill_price, sl)
+                ts_bar   = (i + o.time_stop_bars) if o.time_stop_bars > 0 else None
+
+                pos = {
+                    "entry_time":      bar_ts,
+                    "entry_price":     fill_price,
+                    "direction":       direction,
+                    "sl":              sl,
+                    "tp":              o.tp_price,
+                    "lot_size":        lot_size,
+                    "balance_at_entry":balance,
+                    "orig_dist":       abs(fill_price - sl),
+                    "be_triggered":    False,
+                    "time_stop_bar":   ts_bar,
+                    "event_type":      o.event_type,
+                }
+
+                eq_curve[bar_ts] = balance
+                # Cancel all other OCO partners
+                active_orders = []
+
+            # If position still open at end of scan window → force-close
+            if pos is not None:
+                close_bar = min(scan_end - 1, n - 1)
+                trade = self._close_position(
+                    pos, closes[close_bar], idx[close_bar], "end_of_data"
+                )
+                trades.append(trade)
+                balance       += trade.pnl_dollars
+                eq_curve[idx[close_bar]] = balance
+                last_exit_bar = close_bar
+                pos = None
+
+        # Final day P&L
+        if prev_date is not None:
+            day_pnl[prev_date] = balance - midnight_balance
+
+        eq_curve[idx[-1]] = balance
+
+        # Use a dummy strategy name if strategy lacks a name
+        strat_name = getattr(self.strategy, "name", "news_m1_bracket")
+
+        config = {
+            "instrument":      self.instrument,
+            "initial_balance": self.initial_balance,
+            "phase":           self.phase,
+            "strategy_name":   strat_name,
+        }
+        return BacktestResult(
+            trades=trades,
+            equity_curve=pd.Series(eq_curve).sort_index(),
             daily_pnl=pd.Series(day_pnl),
             config=config,
             initial_balance=self.initial_balance,

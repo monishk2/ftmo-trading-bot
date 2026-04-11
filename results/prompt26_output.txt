@@ -1,0 +1,136 @@
+
+======================================================================
+PROMPT 26 — M1 News Bracket Orders (XAUUSD)
+======================================================================
+
+Loading data...
+  M1 bars: 1599840
+  Events : 276
+
+======================================================================
+TASK 0: Bracket Infrastructure Verification
+======================================================================
+  XAUUSD M1: 1599840 bars  2021-12-31 19:00:00-05:00  →  2025-02-04 18:59:00-05:00
+
+  Sample event: 2022-01-07 08:30
+  Anchor price : 1789.51
+  M1 ATR(60)   : 0.59 (59 pips)
+  Bracket dist : 0.30 (30 pips)
+  BUY  STOP  entry=1789.80  sl=1789.21  tp=1790.99
+  SELL STOP  entry=1789.21  sl=1789.80  tp=1788.03
+  Place bar=9448  expiry bar=9478  time_stop=120 bars
+
+======================================================================
+TASK 2: Baseline Backtest (Jan 2022 – Feb 2025)
+======================================================================
+
+--- All Events (XAUUSD) ---
+  Events in calendar (2022-2025): 276
+  Bracket orders generated: 502 (251 OCO pairs)
+  Fade    orders generated: 502 (251 OCO pairs)
+  Bracket  fill=4%: T=10 WR=0.0% Ret=-9.56% Sh=-541.728 MaxDD=9.6% PF=0.00 T/mo=9.8
+  Fade     fill=31%: T=78 WR=67.9% Ret=-9.23% Sh=-3.476 MaxDD=9.5% PF=0.57 T/mo=7.2
+
+--- VERY_HIGH Events Only (NFP/FOMC/CPI/GDP_ADV) ---
+  Bracket  fill=19%: T=21 WR=23.8% Ret=-9.07% Sh=-7.073 MaxDD=9.1% PF=0.41 T/mo=3.2
+  Fade     fill=31%: T=34 WR=52.9% Ret=-9.16% Sh=-7.616 MaxDD=9.2% PF=0.28 T/mo=3.1
+
+--- Per Event Type (Bracket, XAUUSD) ---
+  CPI             fill=64%: T=23 WR=26.1% Ret=-9.25% Sh=-6.442 MaxDD=10.7% PF=0.44 T/mo=1.0
+  FOMC            fill=75%: T=18 WR=22.2% Ret=-9.31% Sh=-9.628 MaxDD=9.5% PF=0.30 T/mo=0.7
+  GDP_ADV         fill=100%: T=12 WR=25.0% Ret=-5.05% Sh=-6.552 MaxDD=5.6% PF=0.43 T/mo=0.4
+  ISM_PMI         fill=91%: T=32 WR=28.1% Ret=-9.23% Sh=-4.241 MaxDD=9.2% PF=0.58 T/mo=1.0
+  NFP             fill=47%: T=17 WR=17.6% Ret=-9.69% Sh=-10.411 MaxDD=9.7% PF=0.28 T/mo=1.0
+  PCE             fill=33%: T=12 WR=8.3% Ret=-9.01% Sh=-15.856 MaxDD=9.6% PF=0.15 T/mo=1.1
+  PPI             fill=89%: T=32 WR=31.2% Ret=-9.16% Sh=-4.513 MaxDD=9.2% PF=0.56 T/mo=1.0
+  RETAIL_SALES    fill=100%: T=36 WR=38.9% Ret=-3.47% Sh=-1.349 MaxDD=4.7% PF=0.84 T/mo=1.0
+
+--- Spread Sensitivity (Bracket, VERY_HIGH) ---
+  spread_mult=1.5x fill=25%: T=27 WR=25.9% Ret=-9.62% Sh=-5.483 MaxDD=9.6% PF=0.50 T/mo=3.2
+  spread_mult=2.0x fill=19%: T=21 WR=23.8% Ret=-9.07% Sh=-7.073 MaxDD=9.1% PF=0.41 T/mo=3.2
+  spread_mult=3.0x fill=17%: T=18 WR=22.2% Ret=-9.34% Sh=-9.629 MaxDD=9.3% PF=0.30 T/mo=3.4
+
+--- M1 vs M15 Comparison ---
+  M15 straddle WR (Prompt 25): 21.1%  Sharpe=-9.96  (enter AFTER spike)
+  M1 bracket   WR (now):       23.8%  Sharpe=-7.073  (enter BEFORE spike)
+  Fill rate (% events with a trade): 19%
+  → NO — M1 bracket still struggling (WR < 33% or Sharpe < 0)
+
+Best baseline Sharpe: -7.073
+WF gate (> -1.0): SKIP
+
+======================================================================
+TASK 3: Walk-Forward (6m IS / 3m OOS / 3m step, 108 combos)
+======================================================================
+SKIP: best baseline Sharpe < -1.0
+
+======================================================================
+TASK 4: FTMO Eval Simulation
+======================================================================
+
+London S3 standalone reference: +0.896%/mo, CAGR=11.3%
+  Months to +10% at London S3 only: 11
+
+News M1 eval SKIPPED (WF OOS Sharpe did not clear 0.2 threshold)
+
+--- Risk Sensitivity (Best Bracket, VERY_HIGH only) ---
+  risk=1.0%: T=21 WR=23.8% Ret=-9.07% Sh=-7.073 MaxDD=9.1% PF=0.41 T/mo=3.2
+  risk=1.5%: T=16 WR=25.0% Ret=-9.91% Sh=-6.750 MaxDD=9.9% PF=0.42 T/mo=3.3
+  risk=2.0%: T=5 WR=0.0% Ret=-9.61% Sh=-495.466 MaxDD=9.6% PF=0.00 T/mo=5.4
+  risk=2.5%: T=4 WR=0.0% Ret=-9.64% Sh=-484.730 MaxDD=9.6% PF=0.00 T/mo=6.1
+
+======================================================================
+TASK 5: Maximum Single-Event Move Analysis
+======================================================================
+
+Date          Type          MaxMove(pips)  At2%risk($)  At2%risk(%)
+-----------------------------------------------------------------
+  2024-08-15    RETAIL_SALES      3304 pips      $    360  ( 3.60%)
+  2024-07-11    CPI               3136 pips      $    360  ( 3.60%)
+  2023-02-03    NFP               3078 pips      $    360  ( 3.60%)
+  2024-09-18    FOMC              3042 pips      $    360  ( 3.60%)
+  2022-10-13    CPI               2971 pips      $    360  ( 3.60%)
+  2022-09-13    CPI               2905 pips      $    360  ( 3.60%)
+  2024-02-13    CPI               2717 pips      $    360  ( 3.60%)
+  2023-12-13    FOMC              2626 pips      $    360  ( 3.60%)
+  2023-05-05    NFP               2595 pips      $    360  ( 3.60%)
+  2022-11-10    CPI               2560 pips      $    360  ( 3.60%)
+  2024-05-03    NFP               2489 pips      $    360  ( 3.60%)
+  2024-06-12    CPI               2460 pips      $    360  ( 3.60%)
+  2024-10-04    NFP               2424 pips      $    360  ( 3.60%)
+  2022-12-13    CPI               2292 pips      $    360  ( 3.60%)
+  2024-02-02    NFP               2278 pips      $    360  ( 3.60%)
+  2022-07-13    CPI               2250 pips      $    360  ( 3.60%)
+  2022-06-30    PCE               2184 pips      $    360  ( 3.60%)
+  2024-04-10    CPI               2156 pips      $    360  ( 3.60%)
+  2024-08-02    NFP               2146 pips      $    360  ( 3.60%)
+  2022-08-05    NFP               2125 pips      $    360  ( 3.60%)
+
+All 256 events:
+  Median max-move  : 800 pips
+  Mean  max-move   : 1013 pips
+  P90   max-move   : 1952 pips
+  Median pnl@2%    : 3.60%
+  Mean  pnl@2%     : 3.53%
+
+Per event type (median max-move, pips):
+  CPI            : median=1465  mean=1563  n=36
+  FOMC           : median=1210  mean=1217  n=24
+  NFP            : median=1071  mean=1284  n=37
+  GDP_ADV        : median=846  mean=962  n=12
+  ISM_PMI        : median=719  mean=782  n=38
+  PPI            : median=698  mean=793  n=36
+  RETAIL_SALES   : median=660  mean=846  n=36
+  PCE            : median=601  mean=706  n=37
+
+Top-10 events cumulative pnl@2%risk: 36.0%
+  → YES: top-10 events ALONE would cover the +10% FTMO target
+
+NFP / FOMC / CPI breakdown:
+  NFP: n=37  median_move=1071p  max_move=3078p  median_pnl@2%=3.60%
+  FOMC: n=24  median_move=1210p  max_move=3042p  median_pnl@2%=3.60%
+  CPI: n=36  median_move=1465p  max_move=3136p  median_pnl@2%=3.60%
+
+======================================================================
+PROMPT 26 COMPLETE
+======================================================================
