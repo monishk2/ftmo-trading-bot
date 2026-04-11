@@ -160,6 +160,15 @@ _M1_SWEEP_GRID = {
     "volume_mult":          [1.0, 1.5],
 }
 
+_M1_SCALPER_GRID = {
+    # Gold M1 Scalper — 3×3×3×3×3 = 243 combos
+    "sweep_min_pips":       [5, 10, 15],
+    "sl_cap_pips":          [100, 150, 200],
+    "rr_ratio":             [1.2, 1.5, 2.0],
+    "risk_per_trade_pct":   [0.5, 0.8, 1.0],
+    "time_stop_minutes":    [60, 90, 120],
+}
+
 
 # ---------------------------------------------------------------------------
 # Data containers
@@ -273,7 +282,12 @@ def run_walk_forward(
         grid = _M1_SWEEP_GRID
         _build_strategy = _build_m1_sweep_strategy
         _base_config    = _load_m1_sweep_base_config()
-        use_fast_runner = True   # M1 data: always use sparse runner
+        use_fast_runner = True
+    elif strat_lower in ("gold_m1_scalper", "m1_scalper", "scalper"):
+        grid = _M1_SCALPER_GRID
+        _build_strategy = _build_m1_scalper_strategy
+        _base_config    = _load_m1_scalper_base_config()
+        use_fast_runner = True
     else:
         raise ValueError(f"Unknown strategy: {strategy_name!r}. "
                          "Use 'london_breakout', 'fvg_retracement', 'ny_session_breakout', "
@@ -575,6 +589,19 @@ def _build_sweep_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
     from strategies.gold_sweep_reversal import GoldSweepReversal
     cfg = {**base_cfg, **params}
     s = GoldSweepReversal()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_m1_scalper_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["gold_m1_scalper"]
+
+
+def _build_m1_scalper_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.gold_m1_scalper import GoldM1Scalper
+    cfg = {**base_cfg, **params}
+    s = GoldM1Scalper()
     s.setup(cfg, instrument_cfg)
     return s
 

@@ -84,11 +84,11 @@
   "XAUUSD": {
     "pip_size": 0.01,
     "pip_value_per_lot": 1.0,
-    "typical_spread_pips": 25.0,
+    "typical_spread_pips": 12.0,
     "commission_per_lot_round_trip": 0.0,
     "slippage_model": {
-      "normal_pips": 2.0,
-      "session_open_pips": 8.0,
+      "normal_pips": 1.0,
+      "session_open_pips": 4.0,
       "session_open_window_minutes": 15,
       "news_pips": 15.0
     },

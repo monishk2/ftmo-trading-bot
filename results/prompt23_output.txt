@@ -1,0 +1,71 @@
+========================================================================
+Prompt 23: Gold M1 Micro-Swing Scalper
+venv Python 3.13.2 | pandas 3.0.2
+instruments.json XAUUSD spread: 12.0 pips
+========================================================================
+
+========================================================================
+TASK 0: Spread Comparison — M15 GoldSweepReversal
+========================================================================
+Prompt 21 baseline (25-pip spread): Sharpe = 0.655
+Current instruments.json spread: 12.0 pips
+
+12-pip spread result  (TP mode A):
+  GoldSweepReversal @12pip (8s)
+    Trades=471  T/mo=8.3  WR=38.0%
+    Return=80.50%  Sharpe=0.762  MaxDD=28.43%
+    Final balance: $18,050
+
+  Sharpe change: 0.655 → 0.762  (Δ = +0.107)
+  ✓ Spread fix materially improves Sharpe (+0.107)
+
+========================================================================
+TASK 2: Baseline — GoldM1Scalper (Full M1 Range)
+========================================================================
+  M1 parquet: /Users/ashok/ftmo-trading-bot/data/historical/XAUUSD_1m.parquet
+  Instruments.json spread: 12.0 pips
+
+  Loaded 1,599,840 M1 bars: 2022-01-01 00:00:00+00:00 → 2025-02-04 23:59:00+00:00
+  Running baseline (run_fast)...
+  Completed in 43s
+
+  Trades total:    2683
+  T/day avg:       4.51  (target: 4–6)
+  T/month avg:     70.6
+  Win rate:        41.3%  (break-even for 1.5:1 RR = 40.0%)
+  Avg SL pips:     86.0
+  Total return:    -78.52%
+  Sharpe:          -1.973
+  Sortino:         -3.169
+  MaxDD:           80.14%
+  MaxDailyDD:      4.78%
+  Profit factor:   0.854
+  Expectancy R:    -0.0857
+  Avg win $:       $41.37
+  Avg loss $:      $34.13
+
+  GoldM1Scalper — yearly P&L:
+    2022: 881 trades  WR=39%  Net=$-5,808
+    2023: 908 trades  WR=43%  Net=$-1,091
+    2024: 874 trades  WR=41%  Net=$-1,079
+    2025:  20 trades  WR=60%  Net=$+126
+
+  Exit reasons:
+    sl             : 1574 (58.7%)
+    time_stop      :    1 (0.0%)
+    tp             : 1108 (41.3%)
+
+  GATE FAIL: Sharpe < -1.0 — strategy not viable, skip WF
+
+========================================================================
+TASK 3: Walk-Forward — GoldM1Scalper
+========================================================================
+  SKIPPED: Baseline Sharpe < -1.0 (walk-forward gate not passed)
+
+========================================================================
+TASKS 4 SKIPPED: WF did not pass
+========================================================================
+
+========================================================================
+Prompt 23 COMPLETE
+========================================================================
