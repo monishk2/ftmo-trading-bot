@@ -1,0 +1,2408 @@
+Prompt 21: Gold Liquidity Sweep Reversal
+venv Python 3.13.2 | pandas 3.0.2
+
+========================================================================
+  TASK 2 — Baseline Backtest (Jul 2020 → Apr 2025)
+========================================================================
+  Volume data: 67.4% non-zero bars
+  Running TP-A (fixed 2.5:1 RR)…
+  Running TP-B (opposing level)…
+
+  TP-A (fixed 2.5:1 RR):
+    Trades=471  T/mo=8.3  WR=38.0%  PF=1.157
+    AvgW=$262  AvgL=$139  Return=+63.48%  Sharpe=+0.655  DD=29.18%
+    Avg SL: 364 pips  Avg duration: 2.9h
+    FTMO breaches: 2 / 19 windows
+
+  TP-B (opposing level):
+    Trades=471  T/mo=8.3  WR=36.7%  PF=1.043
+    AvgW=$209  AvgL=$116  Return=+14.98%  Sharpe=+0.227  DD=34.03%
+    Avg SL: 364 pips  Avg duration: 2.7h
+    FTMO breaches: 2 / 19 windows
+
+  Level-type analysis (TP-A):
+    PDH: signals=14  WR=67%
+    PDL: signals=15  WR=25%
+    ASH: signals=33  WR=36%
+    ASL: signals=30  WR=25%
+    LSH: signals=25  WR=40%
+    LSL: signals=35  WR=50%
+    NSH: signals=18  WR=67%
+    NSL: signals=18  WR=50%
+
+  Sweep detection analysis (TP-A):
+    Accepted signals: 188
+    Without displacement filter: 567 (+379 recovered)
+    Without volume filter: 539 (+351 recovered)
+
+  Viability check (T/mo≥4, Sharpe>0):
+    T/mo=8.3 ✓  Sharpe=+0.655 ✓
+
+  TP-A Monthly returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   +1.6   -1.3   -0.7   +0.0   -1.3   +5.7    +4.0%
+   2021   +3.8   -5.8   -2.7   +0.6  +11.2   +4.9   +4.6   -0.9   +8.6   +1.0   +2.2   -1.0   +26.4%
+   2022   +2.5   +1.6   -7.5   -1.0   +4.2   -0.3   +0.9   -3.0   +7.7   -0.8   +6.3   +3.7   +14.4%
+   2023   +7.3  +11.9   -8.3   +6.0   +4.2   -1.0   +2.4   -2.5   +1.4   +3.9   +3.8   -7.0   +22.1%
+   2024   -1.9   -2.0   -0.7   +0.1   -5.6   +0.8   -5.9   -3.2   -1.0   -1.4   -3.0   +1.2   -22.6%
+   2025   +2.9   +1.7   +4.0   +1.4      —      —      —      —      —      —      —      —   +10.1%
+
+========================================================================
+  TASK 3 — Walk-Forward Validation
+========================================================================
+  WF: gold_sweep_reversal  |  256 combos × 6m/3m/3m
+  (min 5 trades per IS window)
+
+Walk-Forward Optimisation — gold_sweep_reversal on XAUUSD
+  Grid: 128 parameter combinations
+  Windows: IS=6m  OOS=3m  step=3m
+  Min trades for valid IS run: 5
+  Costs: spread + dynamic slippage + commission (ALWAYS applied)
+
+Window 1/17 IS: 2020-07 → 2021-01  OOS: 2021-01 → 2021-04
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2020-09-01 03:30:00-04:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2020-09-01 03:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2020-08-25 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2020-08-25 10:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2020-11-12 05:15:00-05:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2020-08-31 08:15:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2020-08-31 08:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2020-11-12 04:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2020-10-07 08:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2020-11-11 07:15:00-05:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2020-10-07 08:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2020-11-04 04:15:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2020-09-01 08:30:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2020-08-26 08:15:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2020-08-26 08:15:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2020-09-01 04:15:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2020-09-01 04:15:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2020-11-04 04:15:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2020-11-12 08:00:00-05:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2020-10-07 09:15:00-04:00
+  IS  Sharpe=1.94  Return=+30.2%  Trades=45
+  OOS Sharpe=0.50  Return=+2.1%  Trades=16
+  Degradation ratio: 0.26  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.5, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 2/17 IS: 2020-10 → 2021-04  OOS: 2021-04 → 2021-07
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2020-10-29 11:00:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2020-10-29 11:00:00-04:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.58% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.67% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.65% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2020-11-12 04:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2020-11-12 04:45:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.63% | threshold=-4.0%
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2021-02-11 10:45:00-05:00
+Total drawdown -9.64% reached safety buffer (-9.0%) at 2021-02-11 11:00:00-05:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2020-11-12 05:15:00-05:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2020-11-12 05:15:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.61% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.64% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.56% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.59% | threshold=-4.0%
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2021-03-18 03:45:00-04:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.54% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.57% | threshold=-4.0%
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2020-12-03 05:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2020-12-03 05:30:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.61% | threshold=-4.0%
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-02-11 10:45:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-01-20 05:30:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.54% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2020-11-12 08:00:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.53% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.59% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.53% | threshold=-4.0%
+Total drawdown -9.52% reached safety buffer (-9.0%) at 2021-03-10 13:15:00-05:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2021-03-10 13:15:00-05:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2020-10-29 11:00:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2020-10-29 11:00:00-04:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.59% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.67% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.64% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2020-11-12 04:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2020-11-12 04:45:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.50% | threshold=-4.0%
+Total drawdown -10.28% reached safety buffer (-9.0%) at 2021-02-10 08:30:00-05:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-02-04 08:15:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2020-11-12 05:15:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2020-11-12 05:15:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.64% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.69% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.56% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-03-10 13:00:00-05:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-03-04 10:15:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-03-10 13:15:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.63% | threshold=-4.0%
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-03-08 03:15:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.57% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2020-12-03 05:30:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2020-12-03 05:30:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.76% reached safety buffer (-9.0%) at 2021-02-10 08:30:00-05:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-01-13 09:15:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.57% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.54% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.53% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2020-11-12 08:00:00-05:00
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.55% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-02-25 09:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-02-25 10:00:00-05:00
+  IS  Sharpe=1.26  Return=+12.8%  Trades=63
+  OOS Sharpe=3.10  Return=+17.9%  Trades=41
+  Degradation ratio: 2.47  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.4, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 3/17 IS: 2021-01 → 2021-07  OOS: 2021-07 → 2021-10
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.68% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.66% | threshold=-4.0%
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2021-02-25 06:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.65% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.66% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-03-04 10:30:00-05:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-03-08 03:15:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -10.09% reached safety buffer (-9.0%) at 2021-02-25 06:15:00-05:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2021-03-10 09:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-03-11 10:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-02-25 10:00:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-03-08 03:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.64% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+Total drawdown -9.84% reached safety buffer (-9.0%) at 2021-02-25 06:15:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-03-18 09:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-01-14 12:15:00-05:00
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.65% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-03-18 09:00:00-04:00 | dd=-4.66% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-03-02 07:00:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-03-01 09:00:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-03-04 08:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-03-02 07:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -10.06% reached safety buffer (-9.0%) at 2021-02-25 06:15:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-03-02 07:30:00-05:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-03-04 10:15:00-05:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-03-10 13:00:00-05:00
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2021-03-08 03:15:00-05:00
+Total drawdown -10.12% reached safety buffer (-9.0%) at 2021-03-08 03:15:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-14 09:30:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-02-25 10:00:00-05:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2021-03-10 13:15:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-03-18 03:45:00-04:00
+  IS  Sharpe=2.89  Return=+28.6%  Trades=50
+  OOS Sharpe=0.34  Return=+1.4%  Trades=41
+  Degradation ratio: 0.12  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.4, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 4/17 IS: 2021-04 → 2021-10  OOS: 2021-10 → 2022-01
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.16% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.07% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.08% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.16% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.12% | threshold=-4.0%
+  IS  Sharpe=3.06  Return=+31.1%  Trades=61
+  OOS Sharpe=-0.77  Return=-3.3%  Trades=28
+  Degradation ratio: -0.25  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.4, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 5/17 IS: 2021-07 → 2022-01  OOS: 2022-01 → 2022-04
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-07-20 07:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-20 07:30:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -10.25% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+Total drawdown -11.35% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.07% | threshold=-4.0%
+Total drawdown -9.99% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-07-13 04:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-13 04:15:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2021-08-31 09:45:00-04:00
+Total drawdown -10.35% reached safety buffer (-9.0%) at 2021-09-15 08:45:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.59% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.15% | threshold=-4.0%
+Total drawdown -9.51% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2021-08-12 09:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-13 04:15:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2021-07-13 04:30:00-04:00
+Total drawdown -9.54% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-09-09 12:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-22 06:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-22 06:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.82% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.79% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-31 08:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-09-09 13:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-22 06:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-22 06:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-07-20 07:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-20 07:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-09-09 11:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -10.23% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.13% | threshold=-4.0%
+Total drawdown -11.38% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.07% | threshold=-4.0%
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2021-07-13 04:30:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2021-07-13 04:30:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-08-26 04:45:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2021-08-26 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-09-09 13:00:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-21 11:00:00-04:00
+Total drawdown -9.59% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.14% | threshold=-4.0%
+Total drawdown -9.53% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+FTMO daily-loss triggered at 2021-08-11 08:30:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2021-08-12 09:45:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2021-07-13 04:30:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2021-07-13 04:30:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2021-07-13 10:45:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2021-08-11 08:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-09-09 12:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-22 06:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-22 06:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.85% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2021-07-13 10:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-08-31 08:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-09-09 13:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-22 06:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-22 06:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-12 05:45:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-19 11:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-12 06:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-12 09:30:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+  IS  Sharpe=0.36  Return=+2.5%  Trades=60
+  OOS Sharpe=-1.98  Return=-9.9%  Trades=33
+  Degradation ratio: -5.57  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.4, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 6/17 IS: 2021-10 → 2022-04  OOS: 2022-04 → 2022-07
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2022-03-21 09:45:00-04:00
+Total drawdown -11.13% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.72% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -10.05% reached safety buffer (-9.0%) at 2021-12-02 09:30:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-12-02 09:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.85% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.89% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.87% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.85% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.67% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-03-28 10:00:00-04:00
+Total drawdown -9.69% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.79% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.86% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.86% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.87% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.84% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-20 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-21 09:45:00-04:00
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2022-01-26 12:00:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-02-23 11:00:00-05:00
+Total drawdown -9.87% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.90% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.94% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.92% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-26 05:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2022-03-01 09:00:00-05:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-03-14 04:30:00-04:00
+Total drawdown -9.69% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2021-12-02 09:30:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-02-23 09:45:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.86% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.87% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.86% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.88% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.73% reached safety buffer (-9.0%) at 2022-03-30 03:15:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2022-03-31 06:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.85% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.87% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:45:00-04:00
+Total drawdown -10.84% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -10.85% reached safety buffer (-9.0%) at 2021-10-18 04:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-03-31 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2022-03-31 06:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-03-31 10:00:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2021-10-19 06:45:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-26 12:00:00-05:00
+Total drawdown -9.92% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2021-10-19 07:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-21 10:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+  IS  Sharpe=-0.12  Return=-1.9%  Trades=70
+  OOS Sharpe=-0.60  Return=-4.1%  Trades=42
+  Degradation ratio: 5.07  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.4, 'volume_mult': 1.0, 'regime_atr_percentile': 45}
+
+Window 7/17 IS: 2022-01 → 2022-07  OOS: 2022-07 → 2022-10
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-27 03:30:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-27 03:30:00-05:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-02-23 09:45:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-02-23 10:15:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2022-03-31 10:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2022-03-31 10:15:00-04:00
+Total drawdown -10.14% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -10.11% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.98% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2022-03-23 12:45:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-03-23 12:45:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2022-01-27 06:30:00-05:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2022-01-27 06:30:00-05:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.86% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.88% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2022-05-04 10:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-05-04 11:15:00-04:00
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-01-27 06:15:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2022-01-27 06:15:00-05:00
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2022-03-31 06:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-01-26 06:00:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-26 06:00:00-05:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2022-05-03 03:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-05-04 11:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2022-02-21 13:00:00-05:00
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2022-02-23 09:45:00-05:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.78% | threshold=-4.0%
+Total drawdown -11.01% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.77% | threshold=-4.0%
+Total drawdown -10.83% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -10.18% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -10.16% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.92% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2022-03-31 10:00:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2022-03-31 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-01-26 07:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-26 07:15:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-05-03 03:30:00-04:00
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2022-05-03 03:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2022-03-31 07:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2022-03-01 09:15:00-05:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2022-05-17 05:00:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2022-01-26 11:45:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-01-26 11:45:00-05:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.03% | threshold=-4.0%
+Total drawdown -12.33% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2022-05-04 10:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-01-27 03:30:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-27 03:30:00-05:00
+Total drawdown -11.03% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -10.97% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2022-03-30 08:00:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-03-30 08:45:00-04:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2022-04-28 10:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-05-03 11:45:00-04:00
+Total drawdown -10.16% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -10.12% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.97% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-01-24 08:45:00-05:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-03-30 08:45:00-04:00
+Total drawdown -10.50% reached safety buffer (-9.0%) at 2022-03-30 09:30:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2022-01-27 06:30:00-05:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2022-01-27 06:30:00-05:00
+Total drawdown -9.77% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.82% reached safety buffer (-9.0%) at 2022-03-22 10:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2022-05-02 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.76% | threshold=-4.0%
+Total drawdown -10.69% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.73% | threshold=-4.0%
+Total drawdown -12.78% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.72% | threshold=-4.0%
+Total drawdown -12.46% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.52% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.77% reached safety buffer (-9.0%) at 2022-01-27 06:30:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-01-27 06:15:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2022-03-31 10:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-03-31 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-26 06:00:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-01-26 06:00:00-05:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2022-03-31 10:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2022-03-31 10:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2022-03-01 09:15:00-05:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2022-03-01 09:15:00-05:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.73% | threshold=-4.0%
+Total drawdown -10.12% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -10.16% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -10.17% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.98% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.90% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-01-24 08:45:00-05:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2022-01-25 09:15:00-05:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2022-05-03 03:45:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2022-05-03 04:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-01-26 07:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-01-26 07:15:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-04 10:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2022-05-03 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-04 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.72% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.61% | threshold=-4.0%
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2022-01-20 08:45:00-05:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2022-01-20 09:45:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-01-26 11:45:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2022-01-26 11:45:00-05:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.05% | threshold=-4.0%
+Total drawdown -10.81% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.99% | threshold=-4.0%
+Total drawdown -11.59% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.59% | threshold=-4.0%
+  IS  Sharpe=-0.46  Return=-4.9%  Trades=65
+  OOS Sharpe=0.74  Return=+3.1%  Trades=29
+  Degradation ratio: -1.61  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 8/17 IS: 2022-04 → 2022-10  OOS: 2022-10 → 2023-01
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.63% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2022-07-28 04:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.75% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-09-07 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.71% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.74% | threshold=-4.0%
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.60% | threshold=-4.0%
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+Total drawdown -12.34% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.71% | threshold=-4.0%
+Total drawdown -12.36% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.07% | threshold=-4.0%
+Total drawdown -10.22% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.94% | threshold=-4.0%
+Total drawdown -10.16% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.00% | threshold=-4.0%
+Total drawdown -13.90% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.01% | threshold=-4.0%
+Total drawdown -13.86% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -11.04% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -10.98% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-04-21 05:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2022-04-21 05:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.72% | threshold=-4.0%
+Total drawdown -9.87% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.71% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.67% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.72% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.60% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.74% | threshold=-4.0%
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-05-04 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-05-04 10:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.12% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.11% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-05-17 07:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.06% | threshold=-4.0%
+Total drawdown -14.48% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.04% | threshold=-4.0%
+Total drawdown -14.48% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -9.73% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2022-04-21 11:30:00-04:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2022-04-21 11:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.86% reached safety buffer (-9.0%) at 2022-06-23 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.88% reached safety buffer (-9.0%) at 2022-06-23 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-17 04:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-05-17 04:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2022-08-03 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.76% | threshold=-4.0%
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-08-03 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.07% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.95% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.97% | threshold=-4.0%
+Total drawdown -13.12% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.96% | threshold=-4.0%
+Total drawdown -13.17% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.03% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2022-05-18 07:45:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.06% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-05-18 07:45:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.97% | threshold=-4.0%
+Total drawdown -11.48% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.99% | threshold=-4.0%
+Total drawdown -11.50% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2022-08-03 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-09-01 06:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.72% | threshold=-4.0%
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.71% | threshold=-4.0%
+Total drawdown -9.75% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.96% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.96% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.06% | threshold=-4.0%
+Total drawdown -14.42% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.91% | threshold=-4.0%
+Total drawdown -14.27% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.92% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2022-09-01 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.02% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-05-18 07:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-04 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-05-04 10:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.75% | threshold=-4.0%
+Total drawdown -9.94% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.75% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-09-13 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.65% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2022-05-17 06:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.64% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2022-05-17 06:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.74% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-09-01 06:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.61% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+Total drawdown -12.38% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.56% | threshold=-4.0%
+Total drawdown -12.28% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.96% | threshold=-4.0%
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2022-06-23 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.07% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-06-23 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.05% | threshold=-4.0%
+Total drawdown -12.52% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.92% | threshold=-4.0%
+Total drawdown -12.40% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -11.02% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -10.98% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2022-04-21 05:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-04-21 05:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.71% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2022-05-17 04:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.66% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-05-17 04:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.60% | threshold=-4.0%
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.61% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-05-04 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-05-04 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2022-09-07 11:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.00% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2022-09-13 06:45:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.11% | threshold=-4.0%
+Total drawdown -13.38% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.11% | threshold=-4.0%
+Total drawdown -13.38% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.73% reached safety buffer (-9.0%) at 2022-04-19 08:30:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2022-04-21 11:30:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2022-04-21 11:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-08-03 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.77% | threshold=-4.0%
+Total drawdown -9.89% reached safety buffer (-9.0%) at 2022-06-16 06:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.63% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2022-06-15 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.62% | threshold=-4.0%
+Total drawdown -10.74% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.07% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.07% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.99% | threshold=-4.0%
+Total drawdown -11.89% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.01% | threshold=-4.0%
+Total drawdown -11.78% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.03% | threshold=-4.0%
+Total drawdown -9.76% reached safety buffer (-9.0%) at 2022-08-03 10:00:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.91% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.98% | threshold=-4.0%
+Total drawdown -11.48% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.98% | threshold=-4.0%
+Total drawdown -11.48% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.69% | threshold=-4.0%
+Total drawdown -9.94% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-05-17 04:15:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-05-17 04:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.66% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.67% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.70% | threshold=-4.0%
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.68% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.09% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.95% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-6.95% | threshold=-4.0%
+Total drawdown -13.10% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.09% | threshold=-4.0%
+Total drawdown -13.23% reached safety buffer (-9.0%) at 2022-05-16 03:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.03% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2022-09-07 08:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-7.04% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.70% | threshold=-4.0%
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2022-09-22 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-05-04 10:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-05-04 10:30:00-04:00
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.76% | threshold=-4.0%
+  IS  Sharpe=0.49  Return=+3.8%  Trades=52
+  OOS Sharpe=2.33  Return=+9.6%  Trades=25
+  Degradation ratio: 4.76  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 9/17 IS: 2022-07 → 2023-01  OOS: 2023-01 → 2023-04
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2022-09-13 04:15:00-04:00
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.61% | threshold=-4.0%
+Total drawdown -11.05% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.73% | threshold=-4.0%
+Total drawdown -10.89% reached safety buffer (-9.0%) at 2022-09-22 08:30:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.83% | threshold=-4.0%
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2022-09-22 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2022-09-07 11:15:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.80% | threshold=-4.0%
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.75% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-09-22 08:15:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.32% | threshold=-4.0%
+Total drawdown -10.01% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2022-09-07 11:15:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2022-09-14 05:45:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.31% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2022-09-01 06:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2022-09-01 06:15:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.78% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-09-22 05:00:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.75% | threshold=-4.0%
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2022-09-22 08:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.68% | threshold=-4.0%
+Total drawdown -10.67% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -10.27% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-09-07 10:45:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -9.59% reached safety buffer (-9.0%) at 2022-09-13 06:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -9.76% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.80% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-09-07 07:45:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2022-10-12 14:00:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-09-14 06:00:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-21 14:30:00-04:00 | dd=-5.81% | threshold=-4.0%
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2022-09-21 14:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.32% | threshold=-4.0%
+Total drawdown -10.02% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.32% | threshold=-4.0%
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2022-09-07 11:15:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2022-09-07 10:45:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2022-09-14 05:45:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.32% | threshold=-4.0%
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2022-09-07 11:15:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.79% | threshold=-4.0%
+Total drawdown -10.44% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.88% | threshold=-4.0%
+Total drawdown -10.01% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-01 06:00:00-04:00
+Total drawdown -9.53% reached safety buffer (-9.0%) at 2022-09-01 06:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.30% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.80% | threshold=-4.0%
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2022-09-13 06:45:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2022-09-14 05:45:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.32% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -10.95% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-09-01 08:30:00-04:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -10.46% reached safety buffer (-9.0%) at 2022-09-01 08:30:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+FTMO daily-loss triggered at 2022-07-28 08:30:00-04:00 | dd=-4.23% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-08-03 09:00:00-04:00
+  IS  Sharpe=2.26  Return=+20.8%  Trades=55
+  OOS Sharpe=2.83  Return=+16.0%  Trades=39
+  Degradation ratio: 1.25  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 10/17 IS: 2022-10 → 2023-04  OOS: 2023-04 → 2023-07
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.61% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.64% | threshold=-4.0%
+Total drawdown -10.11% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.66% | threshold=-4.0%
+Total drawdown -10.08% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.60% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.57% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.62% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.65% | threshold=-4.0%
+Total drawdown -10.13% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.67% | threshold=-4.0%
+Total drawdown -10.12% reached safety buffer (-9.0%) at 2022-10-13 07:30:00-04:00
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.63% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.68% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-10-12 14:00:00-04:00 | dd=-4.60% | threshold=-4.0%
+  IS  Sharpe=3.05  Return=+32.0%  Trades=57
+  OOS Sharpe=2.75  Return=+12.0%  Trades=22
+  Degradation ratio: 0.90  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 11/17 IS: 2023-01 → 2023-07  OOS: 2023-07 → 2023-10
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.75% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.32% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.22% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.21% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.72% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.90% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.26% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.32% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.29% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.29% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.26% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.16% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.10% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.18% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.15% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.31% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.77% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.73% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.29% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.29% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.26% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.27% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.70% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.76% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.69% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.21% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.22% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.24% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.73% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.77% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.72% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.23% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-04-26 03:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.25% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.26% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.79% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.73% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.16% | threshold=-4.0%
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.13% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.32% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.14% | threshold=-4.0%
+  IS  Sharpe=3.23  Return=+57.1%  Trades=55
+  OOS Sharpe=1.37  Return=+9.6%  Trades=22
+  Degradation ratio: 0.42  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.5, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 12/17 IS: 2023-04 → 2023-10  OOS: 2023-10 → 2024-01
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -12.60% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -12.75% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -10.10% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.16% | threshold=-4.0%
+Total drawdown -18.87% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.17% | threshold=-4.0%
+Total drawdown -18.88% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.24% | threshold=-4.0%
+Total drawdown -15.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.10% | threshold=-4.0%
+Total drawdown -15.30% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.27% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.20% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.19% | threshold=-4.0%
+Total drawdown -18.28% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.20% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.21% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -12.60% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -12.75% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -10.10% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.85% | threshold=-4.0%
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.17% | threshold=-4.0%
+Total drawdown -18.87% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.16% | threshold=-4.0%
+Total drawdown -18.87% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.11% | threshold=-4.0%
+Total drawdown -15.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.25% | threshold=-4.0%
+Total drawdown -15.49% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.27% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.20% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+Total drawdown -18.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+Total drawdown -18.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+Total drawdown -18.44% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.85% | threshold=-4.0%
+Total drawdown -12.74% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -12.75% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -10.10% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -10.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.31% | threshold=-4.0%
+Total drawdown -19.01% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.31% | threshold=-4.0%
+Total drawdown -19.02% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.26% | threshold=-4.0%
+Total drawdown -15.50% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.11% | threshold=-4.0%
+Total drawdown -15.35% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.27% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+Total drawdown -18.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.05% | threshold=-4.0%
+Total drawdown -18.16% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.35% | threshold=-4.0%
+Total drawdown -18.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.05% | threshold=-4.0%
+Total drawdown -18.17% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -12.60% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.71% | threshold=-4.0%
+Total drawdown -12.60% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -10.24% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.86% | threshold=-4.0%
+Total drawdown -10.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.17% | threshold=-4.0%
+Total drawdown -18.86% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.31% | threshold=-4.0%
+Total drawdown -19.00% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.25% | threshold=-4.0%
+Total drawdown -15.49% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.24% | threshold=-4.0%
+Total drawdown -15.45% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.66% | threshold=-4.0%
+Total drawdown -12.11% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.81% | threshold=-4.0%
+Total drawdown -12.27% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-10.80% | threshold=-4.0%
+Total drawdown -12.26% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.20% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.21% | threshold=-4.0%
+Total drawdown -18.32% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.20% | threshold=-4.0%
+Total drawdown -18.31% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+FTMO daily-loss triggered at 2023-04-12 08:30:00-04:00 | dd=-16.21% | threshold=-4.0%
+Total drawdown -18.30% reached safety buffer (-9.0%) at 2023-04-12 08:30:00-04:00
+  IS  Sharpe=2.16  Return=+15.6%  Trades=28
+  OOS Sharpe=-0.28  Return=-1.3%  Trades=31
+  Degradation ratio: -0.13  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+Window 13/17 IS: 2023-07 → 2024-01  OOS: 2024-01 → 2024-04
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2023-08-08 10:45:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.04% | threshold=-4.0%
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2023-11-09 04:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.78% reached safety buffer (-9.0%) at 2023-08-24 10:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-12-13 07:15:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.07% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-10-12 04:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-12-14 04:00:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-08-31 08:45:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-12-13 07:00:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.07% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.11% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-11-13 10:15:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+Total drawdown -10.13% reached safety buffer (-9.0%) at 2023-08-08 10:45:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2023-08-09 09:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.77% reached safety buffer (-9.0%) at 2023-08-24 08:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.05% | threshold=-4.0%
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2023-11-09 03:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.05% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-10-05 11:15:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2023-08-29 09:00:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.11% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-08-24 10:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-11-09 04:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2023-08-08 10:45:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2023-11-09 04:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.05% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-08-29 08:45:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-12-13 07:15:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.07% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.14% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-10-05 11:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-12-14 07:45:00-05:00
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2023-09-27 06:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-12-13 07:15:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.07% | threshold=-4.0%
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-09-27 06:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-10-31 09:30:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2023-11-09 03:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.09% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-08-07 09:45:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.64% reached safety buffer (-9.0%) at 2023-08-09 09:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.10% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.08% | threshold=-4.0%
+Total drawdown -9.76% reached safety buffer (-9.0%) at 2023-08-24 08:30:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2023-11-09 03:45:00-05:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.05% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.05% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-09-27 06:45:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2023-08-31 09:00:00-04:00
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.03% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.79% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.04% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.07% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-07-20 04:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.12% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-08-31 09:15:00-04:00
+FTMO daily-loss triggered at 2023-07-10 08:15:00-04:00 | dd=-4.06% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+  IS  Sharpe=0.74  Return=+6.2%  Trades=65
+  OOS Sharpe=1.63  Return=+6.9%  Trades=33
+  Degradation ratio: 2.20  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 14/17 IS: 2023-10 → 2024-04  OOS: 2024-04 → 2024-07
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2024-02-13 06:15:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-03-14 05:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.88% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-12-21 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2023-12-19 09:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.99% | threshold=-4.0%
+Total drawdown -9.63% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-01-17 09:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.52% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -10.39% reached safety buffer (-9.0%) at 2023-12-19 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.93% | threshold=-4.0%
+Total drawdown -10.01% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-02-01 10:30:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-12-21 11:15:00-05:00
+Total drawdown -10.45% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -10.96% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-01-18 09:15:00-05:00
+Total drawdown -9.78% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -10.57% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-12-18 04:30:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-12-13 06:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -10.56% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2024-01-11 11:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -12.16% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2023-12-14 04:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.91% | threshold=-4.0%
+Total drawdown -10.06% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2024-01-11 10:45:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-03-14 05:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.76% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-01-18 10:15:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.79% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-12-19 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.99% | threshold=-4.0%
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.83% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-03-20 03:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-01-08 13:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.99% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.79% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-12-21 09:30:00-05:00
+Total drawdown -10.65% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-03-20 03:45:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-01-24 05:45:00-05:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.67% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+Total drawdown -9.75% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.96% | threshold=-4.0%
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+Total drawdown -10.68% reached safety buffer (-9.0%) at 2024-01-17 09:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+Total drawdown -11.96% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-12-14 04:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-01-18 09:45:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-03-06 06:15:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-03-18 10:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-12-21 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2023-12-19 09:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.93% | threshold=-4.0%
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2024-03-14 05:00:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-03-04 06:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -10.43% reached safety buffer (-9.0%) at 2023-12-19 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -10.26% reached safety buffer (-9.0%) at 2024-03-11 09:30:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-02-14 09:00:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-12-21 11:15:00-05:00
+Total drawdown -10.41% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-01-11 11:00:00-05:00
+Total drawdown -9.76% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.63% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-12-18 04:30:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-12-13 06:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.30% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2024-01-11 11:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -12.16% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2023-12-14 04:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.91% | threshold=-4.0%
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-01-10 11:30:00-05:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2024-03-18 10:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.85% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2024-03-19 06:15:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-12-19 09:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-03-20 03:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.34% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-03-19 06:15:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-01-08 13:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-03-20 03:45:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.96% | threshold=-4.0%
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-03-06 06:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-12-21 09:30:00-05:00
+Total drawdown -10.49% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2024-01-24 05:45:00-05:00
+Total drawdown -9.72% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.64% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2023-11-01 10:00:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.93% | threshold=-4.0%
+Total drawdown -10.44% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+Total drawdown -12.00% reached safety buffer (-9.0%) at 2023-12-18 12:45:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-12-14 04:00:00-05:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.84% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2023-12-18 12:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.92% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+  IS  Sharpe=0.99  Return=+7.9%  Trades=61
+  OOS Sharpe=-1.01  Return=-3.3%  Trades=19
+  Degradation ratio: -1.02  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 35}
+
+Window 15/17 IS: 2024-01 → 2024-07  OOS: 2024-07 → 2024-10
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.72% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.76% | threshold=-4.0%
+Total drawdown -9.63% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.82% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-03-19 08:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2024-03-14 11:00:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.96% | threshold=-4.0%
+Total drawdown -9.69% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2024-03-14 05:30:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-05-22 09:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+Total drawdown -11.64% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-04-25 03:45:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.83% | threshold=-4.0%
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-01-22 03:30:00-05:00
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.84% | threshold=-4.0%
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2024-01-22 03:30:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.29% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+Total drawdown -9.90% reached safety buffer (-9.0%) at 2024-03-11 09:30:00-04:00
+Total drawdown -9.53% reached safety buffer (-9.0%) at 2024-03-06 05:15:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.96% | threshold=-4.0%
+Total drawdown -10.32% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -10.58% reached safety buffer (-9.0%) at 2024-03-11 09:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.80% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.90% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.76% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.91% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.76% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.67% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.76% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.71% | threshold=-4.0%
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.93% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.77% | threshold=-4.0%
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.67% | threshold=-4.0%
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-5.00% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.93% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+Total drawdown -12.25% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-04-10 11:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+Total drawdown -9.54% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-06-10 03:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.75% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-03-19 09:15:00-04:00
+FTMO daily-loss triggered at 2024-01-17 09:45:00-05:00 | dd=-4.76% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-03-07 11:15:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-05-08 09:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-05-22 08:30:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+Total drawdown -9.61% reached safety buffer (-9.0%) at 2024-04-25 03:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-05-02 10:30:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2024-05-08 15:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.77% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-06-10 03:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.79% | threshold=-4.0%
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2024-05-23 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.77% | threshold=-4.0%
+Total drawdown -11.08% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-03-19 08:45:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-03-18 10:00:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+Total drawdown -9.90% reached safety buffer (-9.0%) at 2024-03-14 11:00:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.38% reached safety buffer (-9.0%) at 2024-03-18 10:00:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.98% | threshold=-4.0%
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.97% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-03-04 08:30:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-03-19 06:15:00-04:00
+Total drawdown -9.61% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-03-18 10:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+Total drawdown -9.54% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-05-08 09:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-01-25 06:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-01-24 07:00:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -10.08% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-01-25 08:30:00-05:00
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2024-02-01 10:00:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-03-04 08:45:00-05:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.94% | threshold=-4.0%
+Total drawdown -10.06% reached safety buffer (-9.0%) at 2024-03-06 06:30:00-05:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.75% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.85% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.53% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.73% | threshold=-4.0%
+Total drawdown -11.37% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2024-03-20 03:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.52% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-08 10:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.73% | threshold=-4.0%
+Total drawdown -10.97% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.90% | threshold=-4.0%
+Total drawdown -10.70% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-05-23 10:00:00-04:00
+Total drawdown -9.93% reached safety buffer (-9.0%) at 2024-04-25 03:45:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-03-18 10:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-03-11 06:30:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.96% | threshold=-4.0%
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.82% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-03-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-03-19 08:15:00-04:00
+FTMO daily-loss triggered at 2024-03-04 08:45:00-05:00 | dd=-4.95% | threshold=-4.0%
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2024-03-19 09:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+  IS  Sharpe=0.94  Return=+11.2%  Trades=69
+  OOS Sharpe=-5.42  Return=-12.9%  Trades=6
+  Degradation ratio: -5.80  Best params: {'sweep_min_pips': 15, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.5, 'candle_body_atr_min': 0.6, 'volume_mult': 1.0, 'regime_atr_percentile': 35}
+
+Window 16/17 IS: 2024-04 → 2024-10  OOS: 2024-10 → 2025-01
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.65% | threshold=-4.0%
+Total drawdown -14.19% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.48% | threshold=-4.0%
+Total drawdown -11.66% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.76% | threshold=-4.0%
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2024-07-11 05:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.89% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -13.47% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.40% | threshold=-4.0%
+Total drawdown -10.63% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.63% | threshold=-4.0%
+Total drawdown -9.94% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.62% | threshold=-4.0%
+Total drawdown -9.80% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-07-18 06:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.63% | threshold=-4.0%
+Total drawdown -9.54% reached safety buffer (-9.0%) at 2024-05-23 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.74% | threshold=-4.0%
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.74% | threshold=-4.0%
+Total drawdown -11.84% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.66% | threshold=-4.0%
+Total drawdown -10.31% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.14% | threshold=-4.0%
+Total drawdown -15.68% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.30% | threshold=-4.0%
+Total drawdown -14.69% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.27% | threshold=-4.0%
+Total drawdown -14.52% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.13% | threshold=-4.0%
+Total drawdown -12.95% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.40% | threshold=-4.0%
+Total drawdown -14.82% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.87% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.57% | threshold=-4.0%
+Total drawdown -12.78% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.89% | threshold=-4.0%
+Total drawdown -10.21% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2024-05-23 10:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.65% | threshold=-4.0%
+Total drawdown -14.20% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -13.65% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.65% | threshold=-4.0%
+Total drawdown -10.21% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.70% | threshold=-4.0%
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-05-23 04:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.79% | threshold=-4.0%
+Total drawdown -14.93% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -13.56% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.98% reached safety buffer (-9.0%) at 2024-04-08 10:00:00-04:00
+Total drawdown -9.98% reached safety buffer (-9.0%) at 2024-04-08 10:00:00-04:00
+Total drawdown -9.80% reached safety buffer (-9.0%) at 2024-04-23 05:45:00-04:00
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2024-04-23 05:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2024-05-23 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.78% | threshold=-4.0%
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.82% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.40% | threshold=-4.0%
+Total drawdown -10.62% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-07-16 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.39% | threshold=-4.0%
+Total drawdown -10.47% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.58% | threshold=-4.0%
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-07-16 09:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.62% | threshold=-4.0%
+Total drawdown -12.63% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.69% | threshold=-4.0%
+Total drawdown -11.52% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -13.79% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.62% | threshold=-4.0%
+Total drawdown -12.66% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.43% | threshold=-4.0%
+Total drawdown -15.82% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.16% | threshold=-4.0%
+Total drawdown -13.27% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.41% | threshold=-4.0%
+Total drawdown -15.69% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.13% | threshold=-4.0%
+Total drawdown -13.00% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.87% | threshold=-4.0%
+Total drawdown -10.22% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.76% | threshold=-4.0%
+Total drawdown -11.34% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.90% | threshold=-4.0%
+Total drawdown -10.73% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.86% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.58% | threshold=-4.0%
+Total drawdown -13.28% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-05-22 09:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-10 11:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-10 11:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-10 11:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-10 11:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-23 05:45:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-04-23 06:00:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2024-04-18 11:15:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-04-18 11:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.79% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.57% | threshold=-4.0%
+Total drawdown -13.16% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.90% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.42% | threshold=-4.0%
+Total drawdown -10.86% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.70% | threshold=-4.0%
+Total drawdown -14.80% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.54% | threshold=-4.0%
+Total drawdown -12.41% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.66% | threshold=-4.0%
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.58% | threshold=-4.0%
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-07-29 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.50% | threshold=-4.0%
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2024-07-29 10:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.73% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.77% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.15% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.67% | threshold=-4.0%
+Total drawdown -10.44% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.29% | threshold=-4.0%
+Total drawdown -14.71% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.14% | threshold=-4.0%
+Total drawdown -13.08% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.43% | threshold=-4.0%
+Total drawdown -13.28% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.26% | threshold=-4.0%
+Total drawdown -11.78% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.86% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.65% | threshold=-4.0%
+Total drawdown -14.15% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.81% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.48% | threshold=-4.0%
+Total drawdown -11.59% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.84% | threshold=-4.0%
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.78% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.65% | threshold=-4.0%
+Total drawdown -14.15% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.58% | threshold=-4.0%
+Total drawdown -13.33% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -13.61% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.57% | threshold=-4.0%
+Total drawdown -12.75% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.70% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-05-23 04:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.74% | threshold=-4.0%
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-06-10 03:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.73% | threshold=-4.0%
+Total drawdown -13.69% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.79% | threshold=-4.0%
+Total drawdown -12.41% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2024-04-25 03:30:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2024-05-22 09:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2024-04-25 10:00:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-05-22 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.77% | threshold=-4.0%
+Total drawdown -9.55% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.90% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -13.53% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.82% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.76% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.57% | threshold=-4.0%
+Total drawdown -13.22% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.63% | threshold=-4.0%
+Total drawdown -9.89% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.51% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-07-16 09:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.65% | threshold=-4.0%
+Total drawdown -9.75% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.50% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-07-16 09:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.71% | threshold=-4.0%
+Total drawdown -11.15% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.79% | threshold=-4.0%
+Total drawdown -10.18% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.77% | threshold=-4.0%
+Total drawdown -12.46% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.72% | threshold=-4.0%
+Total drawdown -11.32% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.25% | threshold=-4.0%
+Total drawdown -14.31% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.27% | threshold=-4.0%
+Total drawdown -11.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.25% | threshold=-4.0%
+Total drawdown -14.27% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.26% | threshold=-4.0%
+Total drawdown -11.80% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.83% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-05-23 09:45:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.71% | threshold=-4.0%
+Total drawdown -10.60% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.85% | threshold=-4.0%
+Total drawdown -9.99% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-06-10 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.53% | threshold=-4.0%
+Total drawdown -12.34% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-06-05 10:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -12.68% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.73% | threshold=-4.0%
+Total drawdown -13.93% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.62% | threshold=-4.0%
+Total drawdown -12.61% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.65% | threshold=-4.0%
+Total drawdown -15.52% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-8.79% | threshold=-4.0%
+Total drawdown -14.54% reached safety buffer (-9.0%) at 2024-05-22 10:00:00-04:00
+Total drawdown -10.38% reached safety buffer (-9.0%) at 2024-04-25 03:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-05-22 09:15:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-04-23 05:45:00-04:00
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2024-04-23 05:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.27% | threshold=-4.0%
+Total drawdown -11.85% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+  IS  Sharpe=-1.29  Return=-11.9%  Trades=20
+  OOS Sharpe=0.64  Return=+4.6%  Trades=34
+  Degradation ratio: -0.50  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.5, 'candle_body_atr_min': 0.6, 'volume_mult': 1.0, 'regime_atr_percentile': 45}
+
+Window 17/17 IS: 2024-07 → 2025-01  OOS: 2025-01 → 2025-04
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-07-31 07:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-08-06 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-08-22 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-07-31 07:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-08-06 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-08-22 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.40% | threshold=-4.0%
+Total drawdown -9.68% reached safety buffer (-9.0%) at 2024-07-31 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.41% | threshold=-4.0%
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2024-08-07 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-07-31 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.41% | threshold=-4.0%
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-08-07 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.07% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.37% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.77% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.77% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.40% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.39% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.76% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.77% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.41% | threshold=-4.0%
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.07% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-07-31 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-07-31 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.59% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.40% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-31 07:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.89% reached safety buffer (-9.0%) at 2024-08-07 06:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-08-22 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-07-31 07:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-08-06 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-08-22 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -9.69% reached safety buffer (-9.0%) at 2024-07-31 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2024-08-07 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.88% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2024-07-31 04:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.40% | threshold=-4.0%
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2024-08-07 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.07% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.91% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-08-08 09:15:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.40% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.39% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.56% | threshold=-4.0%
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-18 07:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.59% | threshold=-4.0%
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.60% | threshold=-4.0%
+Total drawdown -9.41% reached safety buffer (-9.0%) at 2024-08-14 08:45:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.39% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -12.87% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.38% | threshold=-4.0%
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.37% | threshold=-4.0%
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-07-18 09:00:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-07-31 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.44% | threshold=-4.0%
+Total drawdown -11.07% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.43% | threshold=-4.0%
+Total drawdown -11.06% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-07-31 04:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.45% | threshold=-4.0%
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2024-08-01 10:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.38% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.77% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.76% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.39% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.19% | threshold=-4.0%
+Total drawdown -16.40% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.17% | threshold=-4.0%
+Total drawdown -10.72% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.18% | threshold=-4.0%
+Total drawdown -10.76% reached safety buffer (-9.0%) at 2024-07-11 08:30:00-04:00
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-11.40% | threshold=-4.0%
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2024-08-07 09:15:00-04:00
+  IS  Sharpe=-1.72  Return=-9.3%  Trades=13
+  OOS Sharpe=1.82  Return=+10.7%  Trades=21
+  Degradation ratio: -1.05  Best params: {'sweep_min_pips': 25, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.5, 'candle_body_atr_min': 0.6, 'volume_mult': 1.3, 'regime_atr_percentile': 45}
+
+============================================================================
+WALK-FORWARD SUMMARY  |  gold_sweep_reversal on XAUUSD
+============================================================================
+Win      IS Period     OOS Period   IS Sh  IS Ret%  OOS Sh  OOS Ret%   Deg.  Trades(IS/OOS)
+----------------------------------------------------------------------------
+  1  2020-07→2021-01  2021-01→2021-04    1.94    +30.2%    0.50      +2.1%   0.26  45/16
+  2  2020-10→2021-04  2021-04→2021-07    1.26    +12.8%    3.10     +17.9%   2.47 ✓  63/41
+  3  2021-01→2021-07  2021-07→2021-10    2.89    +28.6%    0.34      +1.4%   0.12  50/41
+  4  2021-04→2021-10  2021-10→2022-01    3.06    +31.1%   -0.77      -3.3%  -0.25  61/28
+  5  2021-07→2022-01  2022-01→2022-04    0.36     +2.5%   -1.98      -9.9%  -5.57  60/33
+  6  2021-10→2022-04  2022-04→2022-07   -0.12     -1.9%   -0.60      -4.1%   5.07 ✓  70/42
+  7  2022-01→2022-07  2022-07→2022-10   -0.46     -4.9%    0.74      +3.1%  -1.61  65/29
+  8  2022-04→2022-10  2022-10→2023-01    0.49     +3.8%    2.33      +9.6%   4.76 ✓  52/25
+  9  2022-07→2023-01  2023-01→2023-04    2.26    +20.8%    2.83     +16.0%   1.25 ✓  55/39
+ 10  2022-10→2023-04  2023-04→2023-07    3.05    +32.0%    2.75     +12.0%   0.90 ✓  57/22
+ 11  2023-01→2023-07  2023-07→2023-10    3.23    +57.1%    1.37      +9.6%   0.42  55/22
+ 12  2023-04→2023-10  2023-10→2024-01    2.16    +15.6%   -0.28      -1.3%  -0.13  28/31
+ 13  2023-07→2024-01  2024-01→2024-04    0.74     +6.2%    1.63      +6.9%   2.20 ✓  65/33
+ 14  2023-10→2024-04  2024-04→2024-07    0.99     +7.9%   -1.01      -3.3%  -1.02  61/19
+ 15  2024-01→2024-07  2024-07→2024-10    0.94    +11.2%   -5.42     -12.9%  -5.80  69/6
+ 16  2024-04→2024-10  2024-10→2025-01   -1.29    -11.9%    0.64      +4.6%  -0.50  20/34
+ 17  2024-07→2025-01  2025-01→2025-04   -1.72     -9.3%    1.82     +10.7%  -1.05  13/21
+----------------------------------------------------------------------------
+Average degradation ratio: 0.09  (target > 0.6 per window, > 0.4 overall)
+
+⚠  WARNING: Strategy may be overfitted.  Average degradation ratio < 0.4.
+   Consider simplifying parameters or using fewer free variables.
+
+Recommended parameters:  {'candle_body_atr_min': 0.4, 'regime_atr_percentile': 35, 'risk_per_trade_pct': 1.0, 'rr_ratio': 2.5, 'sl_buffer_pips': 10, 'sl_cap_pips': 600, 'sweep_min_pips': 15, 'volume_mult': 1.3}
+============================================================================
+
+  WF summary: avg_deg=0.089  pos_OOS=11/17 (65%)
+  WF result: FAIL ✗
+
+========================================================================
+  TASK 4 — Combined Portfolio + Standalone FTMO Eval
+========================================================================
+  Building London S3 + Gold sweep portfolio…
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.64% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.54% | threshold=-4.0%
+FTMO daily-loss triggered at 2022-05-16 03:30:00-04:00 | dd=-4.64% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-05-22 10:00:00-04:00 | dd=-5.88% | threshold=-4.0%
+FTMO daily-loss triggered at 2024-07-11 08:30:00-04:00 | dd=-7.54% | threshold=-4.0%
+FTMO daily-loss triggered at 2021-02-10 08:30:00-05:00 | dd=-4.58% | threshold=-4.0%
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-03-11 10:30:00-05:00
+FTMO daily-loss triggered at 2020-07-30 10:15:00-04:00 | dd=-4.74% | threshold=-4.0%
+FTMO daily-loss triggered at 2020-08-10 09:30:00-04:00 | dd=-4.02% | threshold=-4.0%
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2020-11-19 05:30:00-05:00
+
+  Combined (London S3 + Gold sweep):
+    Avg monthly:    +1.322%
+    CAGR:           +15.80%
+    Sharpe:         +0.966
+    Max DD:         24.33%
+    Worst daily:    -5.166%
+    Days to +10%:   112
+    Pos months:     39/66
+    FTMO breaches:  1/22 windows
+
+  Gold standalone:
+    Avg monthly:    +0.683%
+    CAGR:           +7.18%
+    Sharpe:         +0.449
+    Max DD:         35.62%
+    Worst daily:    -7.539%
+    Days to +10%:   321
+    Pos months:     31/58
+    FTMO breaches:  4/19 windows
+
+  15-trading-day window analysis (gold standalone):
+    Total 15-day windows: 1248
+    Pass rate (≥+10%):    23/1248 = 1.8%
+    Fail rate (daily≤-5% or DD≤-10%): 28/1248 = 2.2%
+    Median window return: +0.00%
+    Best 15-day:  +15.58%
+    Worst 15-day: -10.30%
+
+  15-trading-day window analysis (combined):
+    Total 15-day windows: 1422
+    Pass rate (≥+10%):    27/1422 = 1.9%
+    Fail rate (daily≤-5% or DD≤-10%): 14/1422 = 1.0%
+    Median window return: +0.38%
+    Best 15-day:  +14.65%
+    Worst 15-day: -9.16%
+
+  Gold Monthly Returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   +1.6   -1.3   -0.7   +0.0   -1.3   +5.7    +4.0%
+   2021   +3.8   -5.8   -2.7   +0.6  +11.2   +4.9   +4.6   -0.9   +8.6   +1.0   +2.2   -1.0   +26.4%
+   2022   +2.5   +1.6   -7.5   -1.0   -2.0   -0.4   +0.8   -2.9   +7.7   -0.9   +6.3   +3.8    +8.0%
+   2023   +7.4  +12.0   -8.3   +6.0   +4.2   -1.0   +2.4   -2.5   +1.4   +3.9   +3.8   -7.0   +22.3%
+   2024   -1.9   -2.0   -0.6   +0.1   -9.3   +0.8  -11.2   -3.1   -1.0   -1.4   -2.9   +1.1   -31.4%
+   2025   +3.0   +1.7   +4.1   +1.4      —      —      —      —      —      —      —      —   +10.3%
+
+  Combined Monthly Returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   -1.9   -3.1  +12.3   +3.9   -2.8   +3.0   +11.4%
+   2021   +4.5   -4.4   -4.5   +0.5  +10.8   +9.3   +4.6   -0.6  +12.1   +2.5   -1.8   +1.6   +34.5%
+   2022   +3.2   +2.1   +2.3   +0.6   +0.8   -2.3   -0.6   -2.1   +5.9   +5.2   +4.7   +3.3   +23.1%
+   2023   +5.5   +9.7   -7.8   +6.7   +3.6   -0.8   +3.3   -2.2   +1.4   +5.0   +4.6   -2.5   +26.5%
+   2024   -0.5   -1.1   -0.4   -0.6   -6.5   +0.4   -7.1   -2.2   +1.2   -2.2   -1.1   +0.1   -20.1%
+   2025   -0.0   +5.5   +4.3   -1.3   +0.9   +0.1   +1.8   -0.7   -2.2   +0.9   +1.2   +1.4   +11.9%
+
+========================================================================
+  TASK 4C — Focused Eval Simulation
+========================================================================
+  Gold avg monthly = +0.68% < 3% — full eval sim skipped
+  (Task 4C threshold not met)
+
+========================================================================
+  TASK 5 — Risk Sensitivity Analysis
+========================================================================
+
+  Risk level sensitivity (gold standalone):
+   Risk%   Avg Mo%   Sharpe   MaxDD%   WrstDay%   15d Pass%   15d Fail%
+     1.0%    +0.683%   +0.449    35.62%     -7.539%         1.8%         2.2%
+     1.5%    -0.880%   -0.370    20.23%     -4.581%         1.2%         3.6%
+     2.0%    -1.875%   -0.541    23.81%     -4.742%         0.0%         1.1%
+
+  Best risk level (max pass rate, worst_daily > -3.5%): 1.0%
+
+========================================================================
+  CONTEXT SUMMARY
+========================================================================
+
+  1. Trades/month: TP-A=8.3  Sharpe=+0.655
+     TP-B: T/mo=8.3  Sharpe=+0.227
+  2. Most frequent level swept: LSL  distribution={'NSL': 18, 'LSH': 25, 'ASH': 33, 'LSL': 35, 'PDH': 14, 'NSH': 18, 'PDL': 15, 'ASL': 30}
+  3. Volume filter: 188 signals with vs 342 without → removes 154 trades
+  4. WF: avg_deg=0.089  11/17 pos OOS  → FAIL ✗
+  5. Gold standalone avg monthly: +0.683%  Sharpe=+0.449
+  6. 15-day eval PASS rate (≥+10%): 23/1248 = 1.8%
+  7. 15-day eval FAIL rate: 28/1248 = 2.2%
+  8. Recommended risk: see Task 5 sensitivity table
+
+  9. Verdict:
+    Gold avg monthly: +0.68%  FTMO breaches: 4
+    Single-attempt eval pass rate: 1.8%
+    Two-attempt probability: 3.7%
+    → NO — insufficient edge for reliable FTMO pass in 2-3 week timeframe
+      (avg monthly return too low: +0.68% — need >2%)
+      (15-day pass rate too low: 1.8% — need >5% per attempt)
+      (4 FTMO breaches — strategy violates risk rules)
+
+  Total runtime: 19.4 minutes
+
+Done.

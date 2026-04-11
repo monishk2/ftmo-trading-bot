@@ -136,6 +136,18 @@ _GOLD_GRID = {
     "vpa_volume_mult":      [1.2, 1.5],
 }
 
+_SWEEP_GRID = {
+    # Gold Sweep Reversal — 2×1×2×2×2×2×2×2 = 256 combos
+    "sweep_min_pips":        [15, 25],
+    "sl_buffer_pips":        [10],
+    "sl_cap_pips":           [600, 1000],
+    "rr_ratio":              [2.0, 2.5],
+    "risk_per_trade_pct":    [1.0, 1.5],
+    "candle_body_atr_min":   [0.4, 0.6],
+    "volume_mult":           [1.0, 1.3],
+    "regime_atr_percentile": [35, 45],
+}
+
 
 # ---------------------------------------------------------------------------
 # Data containers
@@ -240,10 +252,15 @@ def run_walk_forward(
         grid = _GOLD_GRID
         _build_strategy = _build_gold_strategy
         _base_config    = _load_gold_base_config()
+    elif strat_lower in ("gold_sweep_reversal", "gold_sweep", "sweep_reversal"):
+        grid = _SWEEP_GRID
+        _build_strategy = _build_sweep_strategy
+        _base_config    = _load_sweep_base_config()
     else:
         raise ValueError(f"Unknown strategy: {strategy_name!r}. "
                          "Use 'london_breakout', 'fvg_retracement', 'ny_session_breakout', "
-                         "'m15_momentum_scalping', 'h1_trend_following', or 'gold_session_breakout'.")
+                         "'m15_momentum_scalping', 'h1_trend_following', 'gold_session_breakout', "
+                         "or 'gold_sweep_reversal'.")
 
     # Caller-supplied grid takes precedence over the strategy-default grid
     if param_grid is not None:
@@ -525,6 +542,19 @@ def _build_h1_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
     from strategies.h1_trend_following import H1TrendFollowing
     cfg = {**base_cfg, **params}
     s = H1TrendFollowing()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_sweep_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["gold_sweep_reversal"]
+
+
+def _build_sweep_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.gold_sweep_reversal import GoldSweepReversal
+    cfg = {**base_cfg, **params}
+    s = GoldSweepReversal()
     s.setup(cfg, instrument_cfg)
     return s
 
