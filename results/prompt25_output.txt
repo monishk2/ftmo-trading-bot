@@ -1,0 +1,156 @@
+
+======================================================================
+PROMPT 25 — News Event Straddle Strategy
+======================================================================
+
+======================================================================
+TASK 0: News Calendar
+======================================================================
+Saved 276 events → data/news_calendar.parquet
+
+Events per type:
+  CPI            :  40
+  ISM_PMI        :  40
+  NFP            :  40
+  PCE            :  39
+  PPI            :  39
+  RETAIL_SALES   :  39
+  FOMC           :  26
+  GDP_ADV        :  13
+
+Date range: 2022-01-03 10:00:00-05:00 → 2025-04-10 08:30:00-04:00
+
+Jan 2022 events (8 total):
+  2022-01-03 10:00 EST            ISM_PMI          HIGH
+  2022-01-07 08:30 EST            NFP              VERY_HIGH
+  2022-01-12 08:30 EST            CPI              VERY_HIGH
+  2022-01-13 08:30 EST            PPI              HIGH
+  2022-01-14 08:30 EST            RETAIL_SALES     HIGH
+  2022-01-26 14:00 EST            FOMC             VERY_HIGH
+  2022-01-27 08:30 EST            GDP_ADV          VERY_HIGH
+  2022-01-28 08:30 EST            PCE              HIGH
+
+======================================================================
+TASK 1: Strategy Verification
+======================================================================
+  EURUSD: 209568 bars  2019-12-31 19:00:00-05:00 → 2025-12-30 18:45:00-05:00
+  GBPUSD: 209952 bars  2019-12-31 19:00:00-05:00 → 2025-12-30 18:45:00-05:00
+  XAUUSD: 186240 bars  2019-12-31 19:00:00-05:00 → 2025-04-30 19:45:00-04:00
+
+NFP event bar check (EURUSD, first 5):
+  2022-01-07 08:30 → bar at 08:30 range=30 pips
+  2022-02-04 08:30 → bar at 08:30 range=36 pips
+  2022-03-04 08:30 → bar at 08:30 range=44 pips
+  2022-04-01 08:30 → bar at 08:30 range=19 pips
+  2022-05-06 08:30 → bar at 08:30 range=26 pips
+
+Straddle setup count (default params, EURUSD, all events):
+  Total straddle setups: 225
+  CPI            :  37
+  NFP            :  34
+  PCE            :  32
+  PPI            :  31
+  RETAIL_SALES   :  29
+  ISM_PMI        :  28
+  FOMC           :  25
+  GDP_ADV        :   9
+
+Fade setup count (default params, EURUSD, all events):
+  Total fade setups: 250
+
+======================================================================
+TASK 2: Baseline Backtest (Jan 2022 – Apr 2025)
+======================================================================
+
+--- All Events, All Instruments ---
+  Straddle EURUSD: T=218 WR=21.1% Ret=-69.24% Sharpe=-9.962 MaxDD=69.2% T/mo=5.6
+  Fade    EURUSD: T=209 WR=45.5% Ret=-27.86% Sharpe=-2.677 MaxDD=34.2% T/mo=5.4
+  Straddle GBPUSD: T=210 WR=21.4% Ret=-66.55% Sharpe=-9.728 MaxDD=67.1% T/mo=5.4
+  Fade    GBPUSD: T=226 WR=47.3% Ret=-23.04% Sharpe=-1.790 MaxDD=31.5% T/mo=5.8
+  Straddle XAUUSD: T=212 WR=21.2% Ret=-65.69% Sharpe=-9.009 MaxDD=67.0% T/mo=5.5
+  Fade    XAUUSD: T=261 WR=43.7% Ret=-21.58% Sharpe=-1.253 MaxDD=24.9% T/mo=6.7
+
+--- Per Event Type (EURUSD Straddle) ---
+  CPI: T=37 WR=21.6% Ret=-18.78% Sharpe=-12.598 MaxDD=18.8% T/mo=1.0
+  FOMC: T=25 WR=24.0% Ret=-11.78% Sharpe=-8.629 MaxDD=11.8% T/mo=0.7
+  GDP_ADV: T=9 WR=11.1% Ret=-4.62% Sharpe=-8.510 MaxDD=4.6% T/mo=0.3
+  ISM_PMI: T=28 WR=28.6% Ret=-11.97% Sharpe=-9.005 MaxDD=12.4% T/mo=0.8
+  NFP: T=34 WR=26.5% Ret=-14.90% Sharpe=-8.742 MaxDD=15.4% T/mo=0.9
+  PCE: T=32 WR=15.6% Ret=-18.44% Sharpe=-12.434 MaxDD=18.4% T/mo=0.8
+  PPI: T=31 WR=19.4% Ret=-16.37% Sharpe=-9.645 MaxDD=16.4% T/mo=0.8
+  RETAIL_SALES: T=29 WR=20.7% Ret=-12.74% Sharpe=-8.246 MaxDD=12.7% T/mo=0.8
+
+--- VERY_HIGH Events Only (EURUSD Straddle) ---
+  VERY_HIGH events straddle: T=105 WR=22.9% Ret=-41.83% Sharpe=-10.075 MaxDD=41.8% T/mo=2.7
+
+--- VERY_HIGH Events Only (EURUSD Fade) ---
+  VERY_HIGH events fade: T=109 WR=45.0% Ret=-12.60% Sharpe=-1.900 MaxDD=20.8% T/mo=2.8
+
+--- NFP / CPI / FOMC individual (EURUSD Straddle) ---
+  NFP         : T=34 WR=26.5% Ret=-14.90% Sharpe=-8.742 MaxDD=15.4% T/mo=0.9
+  CPI         : T=37 WR=21.6% Ret=-18.78% Sharpe=-12.598 MaxDD=18.8% T/mo=1.0
+  FOMC        : T=25 WR=24.0% Ret=-11.78% Sharpe=-8.629 MaxDD=11.8% T/mo=0.7
+  GDP_ADV     : T=9 WR=11.1% Ret=-4.62% Sharpe=-8.510 MaxDD=4.6% T/mo=0.3
+
+--- Root-Cause: Straddle Exit Reasons (EURUSD, ALL events) ---
+  sl             : 147 (67.4%)
+  time_stop      : 61 (28.0%)
+  tp             : 10 (4.6%)
+
+--- Straddle WR vs bracket_atr_mult (EURUSD, ALL events) ---
+  bracket=0.3x: n=237 WR=19.4% avg_SL=26.1pips
+  bracket=0.5x: n=218 WR=21.1% avg_SL=29.4pips
+  bracket=0.8x: n=187 WR=29.9% avg_SL=34.4pips
+  bracket=1.2x: n=156 WR=34.0% avg_SL=40.4pips
+  bracket=2.0x: n=116 WR=42.2% avg_SL=50.7pips
+
+--- Fade WR vs min_spike_pips (EURUSD, ALL events) ---
+  min_spike=10p: n=255 WR=49.0% Ret=-26.3% Sharpe=-2.011
+  min_spike=20p: n=209 WR=45.5% Ret=-27.9% Sharpe=-2.677
+  min_spike=30p: n=129 WR=45.7% Ret=-11.8% Sharpe=-1.559
+  min_spike=40p: n=90 WR=40.0% Ret=-14.3% Sharpe=-2.707
+  min_spike=50p: n=54 WR=35.2% Ret=-12.4% Sharpe=-3.566
+
+Best baseline: VERY_HIGH straddle EURUSD  Sharpe=-10.075
+WF gate check: Sharpe > -1.0? NO - skip WF
+
+======================================================================
+TASK 3: Walk-Forward (6m IS / 3m OOS / 3m step, 243 combos)
+======================================================================
+SKIP: baseline Sharpe < -1.0 — strategy is not viable
+
+======================================================================
+TASK 4: Combined Portfolio + FTMO Eval Sim
+======================================================================
+
+London S3 standalone (reference):
+  Monthly return: +0.896%
+  Months to +10% FTMO target: 11
+  CAGR: 11.30%
+
+News straddle eval SKIPPED (WF OOS Sharpe did not meet threshold)
+Combined portfolio: London S3 only (unchanged)
+
+======================================================================
+TASK 5: Correlation Analysis — London S3 vs News Straddle
+======================================================================
+
+News straddle monthly stats (40 months):
+  Mean/mo:  -1.046%
+  Std/mo:   1.373%
+  Min/mo:   -2.970%
+  Max/mo:   5.523%
+
+News straddle monthly P&L distribution:
+  Positive months: 5/40 (12%)
+  Negative months: 35/40 (88%)
+
+News event trade days: 104 total
+  Events at 08:30 ET (CPI/NFP/PPI/etc): can overlap with London session close
+  Events at 14:00 ET (FOMC): no overlap with London session (03:00-12:00 ET)
+  FOMC trades (14:00, no overlap): 25
+  Other trades (08:30, potential overlap): 80
+
+======================================================================
+PROMPT 25 COMPLETE
+======================================================================
