@@ -98,6 +98,21 @@
       "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
     }
   },
+  "NAS100": {
+    "pip_size": 1.0,
+    "pip_value_per_lot": 1.0,
+    "typical_spread_pips": 1.5,
+    "commission_per_lot_round_trip": 0.0,
+    "slippage_model": {
+      "normal_pips": 0.5,
+      "session_open_pips": 2.0,
+      "session_open_window_minutes": 15,
+      "news_pips": 5.0
+    },
+    "trading_sessions": {
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
   "USDJPY": {
     "pip_size": 0.01,
     "pip_value_per_lot": 8.0,

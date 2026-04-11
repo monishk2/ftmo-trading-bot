@@ -1,0 +1,166 @@
+
+======================================================================
+PROMPT 27 — NAS100 Initial Balance Breakout
+======================================================================
+  Loaded 222,513 M5 bars
+
+======================================================================
+TASK 0 + 5: Data Verification & Volume Quality
+======================================================================
+  Total bars      : 222,513
+  RTH bars        : 64,264
+  RTH trading days: 64264 unique bars / 837 days
+  Date range      : 2022-01-02 → 2025-04-09
+  Volume non-zero : 222,513 / 222,513
+
+  Volume by 30-min RTH slot (confirms exchange volume vs tick volume):
+    09:30  ██████████████████████████████  0.9082
+    10:00  ████████████████████████████    0.8492
+    10:30  ██████████████████████████      0.7900
+    11:00  ████████████████████████        0.7447
+    11:30  ███████████████████████         0.7080
+    12:00  ██████████████████████          0.6742
+    12:30  █████████████████████           0.6428
+    13:00  █████████████████████           0.6531
+    13:30  █████████████████████           0.6394
+    14:00  █████████████████████           0.6650
+    14:30  █████████████████████           0.6602
+    15:00  ██████████████████████          0.6782
+    15:30  ███████████████████████         0.7200
+
+  Open/lunch/close ratio: 0.9082 / 0.6750 / 0.7200
+  → REAL exchange-style volume (open spike + lunch dip + close pickup)
+
+  RTH bar gaps > 5min: 840
+  Largest gap: 4 days 17:35:00  at 2024-01-03 09:30:00-05:00
+
+======================================================================
+TASK 2: Baseline Backtest (Jan 2022 → Apr 2025)
+======================================================================
+
+  Trading days     : 837
+  Narrow IB days   : 171 (20.4%)
+  Avg IB width all : 145.8 pts
+  Avg IB width qual: 89.2 pts
+  NOTE: NAS100 median IB/ADR = 0.54; thresholds <0.25 leave <30 trades in 3yrs
+
+--- Default params (ib_adr=0.40, buf=5, rr=3.0, risk=0.5%, vol=1.0) ---
+  Default: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+
+--- Volume filter impact (ib_adr=0.25, rr=3.0) ---
+  vol_mult=1.0: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  vol_mult=1.3: T=43 WR=37.2% Ret=-1.53% Sh=-1.126 MaxDD=3.2% PF=0.83 T/mo=1.1  [TP=5% SL=33% TS=63%]
+  vol_mult=1.5: T=17 WR=35.3% Ret=0.46% Sh=0.644 MaxDD=1.5% PF=1.11 T/mo=0.5  [TP=12% SL=47% TS=41%]
+
+--- IB ratio sensitivity ---
+  ib_adr=0.30 qualify=7%: T=49 WR=42.9% Ret=-1.61% Sh=-1.132 MaxDD=4.8% PF=0.83 T/mo=1.3  [TP=2% SL=33% TS=65%]
+  ib_adr=0.35 qualify=13%: T=92 WR=43.5% Ret=-1.26% Sh=-0.430 MaxDD=4.8% PF=0.94 T/mo=2.4  [TP=3% SL=39% TS=58%]
+  ib_adr=0.40 qualify=20%: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  ib_adr=0.45 qualify=31%: T=225 WR=48.0% Ret=4.73% Sh=0.583 MaxDD=5.7% PF=1.09 T/mo=5.8  [TP=3% SL=39% TS=58%]
+  ib_adr=0.50 qualify=42%: T=305 WR=50.2% Ret=13.31% Sh=1.159 MaxDD=6.5% PF=1.19 T/mo=7.8  [TP=4% SL=38% TS=59%]
+  ib_adr=0.60 qualify=61%: T=437 WR=50.3% Ret=21.24% Sh=1.246 MaxDD=6.3% PF=1.21 T/mo=11.2  [TP=4% SL=36% TS=60%]
+
+--- RR ratio sensitivity (ib_adr=0.25, vol=1.0) ---
+  rr=2.0: T=148 WR=47.3% Ret=4.59% Sh=0.900 MaxDD=4.9% PF=1.14 T/mo=3.8  [TP=13% SL=36% TS=51%]
+  rr=2.5: T=148 WR=46.6% Ret=1.86% Sh=0.377 MaxDD=5.5% PF=1.06 T/mo=3.8  [TP=5% SL=37% TS=58%]
+  rr=3.0: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  rr=3.5: T=148 WR=46.6% Ret=3.36% Sh=0.644 MaxDD=5.5% PF=1.11 T/mo=3.8  [TP=2% SL=37% TS=61%]
+
+--- Buffer sensitivity (ib_adr=0.25, rr=3.0) ---
+  buf=3pts: T=152 WR=46.7% Ret=5.07% Sh=0.943 MaxDD=5.4% PF=1.16 T/mo=3.9  [TP=3% SL=36% TS=61%]
+  buf=5pts: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  buf=10pts: T=138 WR=45.7% Ret=2.48% Sh=0.528 MaxDD=5.1% PF=1.08 T/mo=3.6  [TP=2% SL=38% TS=60%]
+  buf=15pts: T=133 WR=46.6% Ret=4.30% Sh=0.981 MaxDD=5.2% PF=1.16 T/mo=3.4  [TP=2% SL=34% TS=64%]
+
+--- Narrow IB filter: does it improve WR? ---
+  No IB filter (ratio=99): T=694 WR=48.0% Ret=25.43% Sh=0.885 MaxDD=11.0% PF=1.15 T/mo=17.8  [TP=5% SL=37% TS=58%]
+  Narrow IB   (ratio=0.40): T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+
+Best baseline Sharpe: 0.496
+WF gate (> -1.0): PROCEED
+
+======================================================================
+TASK 3: Walk-Forward (6m IS / 3m OOS / 3m step, 432 combos)
+======================================================================
+Windows: 11
+  IS 2022-01-01 – 2022-07-01  OOS 2022-07-01 – 2022-10-01
+  IS 2022-04-01 – 2022-10-01  OOS 2022-10-01 – 2023-01-01
+  IS 2022-07-01 – 2023-01-01  OOS 2023-01-01 – 2023-04-01
+  IS 2022-10-01 – 2023-04-01  OOS 2023-04-01 – 2023-07-01
+  IS 2023-01-01 – 2023-07-01  OOS 2023-07-01 – 2023-10-01
+  IS 2023-04-01 – 2023-10-01  OOS 2023-10-01 – 2024-01-01
+  IS 2023-07-01 – 2024-01-01  OOS 2024-01-01 – 2024-04-01
+  IS 2023-10-01 – 2024-04-01  OOS 2024-04-01 – 2024-07-01
+  IS 2024-01-01 – 2024-07-01  OOS 2024-07-01 – 2024-10-01
+  IS 2024-04-01 – 2024-10-01  OOS 2024-10-01 – 2025-01-01
+  IS 2024-07-01 – 2025-01-01  OOS 2025-01-01 – 2025-04-01
+
+  Window 1: IS_Sh=5.261 | OOS_Sh=3.428 | deg=0.65 | n_oos=8
+    Best: ratio=0.4 buf=3 rr=3.0 risk=1.0% vol=1.0 maxsl=60
+
+  Window 2: IS_Sh=4.528 | OOS_Sh=-3.601 | deg=-0.80 | n_oos=7
+    Best: ratio=0.4 buf=3 rr=3.0 risk=0.5% vol=1.0 maxsl=60
+
+  Window 3: IS_Sh=5.567 | OOS_Sh=2.175 | deg=0.39 | n_oos=12
+    Best: ratio=0.4 buf=10 rr=2.5 risk=0.75% vol=1.0 maxsl=60
+
+  Window 4: IS_Sh=6.157 | OOS_Sh=1.840 | deg=0.30 | n_oos=5
+    Best: ratio=0.5 buf=3 rr=2.5 risk=0.75% vol=1.3 maxsl=60
+
+  Window 5: IS_Sh=4.257 | OOS_Sh=-23.468 | deg=-5.51 | n_oos=4
+    Best: ratio=0.5 buf=10 rr=2.5 risk=0.5% vol=1.3 maxsl=60
+
+  Window 6: IS_Sh=4.991 | OOS_Sh=0.433 | deg=0.09 | n_oos=25
+    Best: ratio=0.5 buf=5 rr=2.5 risk=0.5% vol=1.0 maxsl=80
+
+  Window 7: IS_Sh=3.409 | OOS_Sh=-0.070 | deg=-0.02 | n_oos=20
+    Best: ratio=0.5 buf=5 rr=2.0 risk=0.5% vol=1.0 maxsl=80
+
+  Window 8: IS_Sh=4.698 | OOS_Sh=4.571 | deg=0.97 | n_oos=9
+    Best: ratio=0.5 buf=3 rr=2.0 risk=0.75% vol=1.3 maxsl=80
+
+  Window 9: IS_Sh=7.443 | OOS_Sh=-1.200 | deg=-0.16 | n_oos=8
+    Best: ratio=0.5 buf=5 rr=3.0 risk=0.5% vol=1.3 maxsl=80
+
+  Window 10: IS_Sh=5.379 | OOS_Sh=-0.402 | deg=-0.07 | n_oos=4
+    Best: ratio=0.4 buf=5 rr=2.0 risk=0.5% vol=1.3 maxsl=80
+
+  Window 11: IS_Sh=3.993 | OOS_Sh=15.075 | deg=3.78 | n_oos=4
+    Best: ratio=0.35 buf=10 rr=3.0 risk=0.5% vol=1.0 maxsl=60
+
+WF SUMMARY:
+  avg_degradation=-0.035  pct_positive_OOS=55%
+    Combined OOS: T=106 WR=48.1% Ret=6.54% Sh=1.385 MaxDD=5.0% PF=1.26 T/mo=3.3  [TP=6% SL=31% TS=63%]
+
+WF pass (avg_deg>0.2 AND ≥50% OOS positive): NO
+Eval gate (OOS Sharpe > 0.2): YES
+
+======================================================================
+TASK 4: FTMO Eval Simulation
+======================================================================
+
+London S3 reference: +0.896%/mo  CAGR=11.3%  Months to +10%: 11
+
+--- Risk Sensitivity (default params) ---
+  risk=0.50%: T=148 WR=46.6% Ret=2.51% Sh=0.496 MaxDD=5.5% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  risk=0.75%: T=148 WR=46.6% Ret=3.65% Sh=0.478 MaxDD=8.2% PF=1.08 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  risk=1.00%: T=148 WR=46.6% Ret=4.73% Sh=0.462 MaxDD=10.8% PF=1.07 T/mo=3.8  [TP=3% SL=37% TS=60%]
+  risk=1.50%: T=148 WR=46.6% Ret=6.58% Sh=0.424 MaxDD=15.8% PF=1.07 T/mo=3.8  [TP=3% SL=37% TS=60%]
+
+NAS100 OOS monthly return: 0.203%
+Combined portfolio: 1.099%/mo  CAGR=14.0%  Months to +10%: 9
+
+  Expected London/NAS correlation: LOW
+  London: 03:00-12:00 ET on FX pairs
+  NAS100: 09:30-16:00 ET on US equities
+  Overlap window 09:30-12:00 is different asset class → near-zero correlation
+
+--- FTMO 15-day Challenge Eval (1000 trials) ---
+  risk_scale=1.0×: 15-day pass rate=0.0%
+  risk_scale=1.5×: 15-day pass rate=0.1%
+  risk_scale=2.0×: 15-day pass rate=0.2%
+  risk_scale=2.5×: 15-day pass rate=0.8%
+
+======================================================================
+PROMPT 27 COMPLETE
+======================================================================
