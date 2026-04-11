@@ -1,0 +1,1361 @@
+Prompt 20: Gold Session Breakout + VPA Filter
+venv Python 3.13.2 | pandas 3.0.2
+
+========================================================================
+  TASK 0 — XAUUSD Data Quality
+========================================================================
+  XAUUSD data: 186,240 bars  2020-01-01 → 2025-04-30
+  Price range:  $1454 → $3497
+  Session days: 1386  bars/day=52.0  (expect 52)
+  Session vol>0: 70,879/72,072 (98.3%)
+  Intra-week weekday gaps >4h: 3  (expect ~0)
+  → Data quality: PASS ✓
+
+========================================================================
+  TASK 2 — Gold Baseline Backtest (Jul 2020 → Apr 2025)
+========================================================================
+  Running TP-A (fixed 2:1 RR)…
+  Running TP-B (1.5 × H1 ATR)…
+
+  TP-A (fixed 2:1 RR):
+    Trades=349  T/mo=6.3  WR=47.6%  PF=0.977
+    AvgW=$65  AvgL=$60  Return=-2.58%  Sharpe=-0.043  DD=13.63%
+    FTMO breaches: 0 / 19 windows
+
+  TP-B (1.5 × H1 ATR):
+    Trades=349  T/mo=6.3  WR=64.5%  PF=0.963
+    AvgW=$34  AvgL=$65  Return=-2.95%  Sharpe=-0.099  DD=11.97%
+    FTMO breaches: 0 / 19 windows
+
+  VPA filter stats:
+    Stage 1 breakouts (total):   719
+    Accepted (VPA confirmed):    156  (21.7%)
+    Rejected (VPA timeout):      563  (78.3%)
+    Accepted win rate:           47.6%
+    (VPA filter removes 78% of breakouts)
+
+  Viability check (T/mo≥8, Sharpe>0.3, PF>1.2):
+    T/mo=6.3 ✗  Sharpe=-0.043 ✗  PF=0.977 ✗
+
+  T/mo=6.3 < 8 — testing relaxations:
+    1. VPA vol threshold 1.2×: T/mo=6.5  Sharpe=+0.173  PF=1.050
+    2. Wider entry 03:00-14:00: T/mo=6.6  Sharpe=-0.119  PF=0.953
+    3. No regime ADX filter: T/mo=7.1  Sharpe=-0.068  PF=0.970
+
+  TP-A Monthly returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   -2.6   +0.6   +1.6   +0.0   +2.3   -1.0    +0.8%
+   2021   -2.1   +0.2   +2.8   +0.7   -0.6   +0.6   -0.0   -2.2   +2.1   -5.1   -0.5   +1.1    -3.0%
+   2022   -0.2   +2.2   +1.8   +0.0   -1.4   -0.2   +1.0   +0.3   -3.6   +1.3   -2.3   +1.8    +0.8%
+   2023   -0.2   -2.7   +5.0   -2.0   -2.6   -0.8   +1.1   +0.8   +1.2   -1.4   -1.8   -0.2    -3.7%
+   2024   +0.5   -1.6   +3.7   -6.1   +1.9   -0.8   +1.9   +0.9   +0.3   +1.1   +0.6   -0.9    +1.3%
+   2025   +1.0   -2.8   +4.3   +0.0      —      —      —      —      —      —      —      —    +2.4%
+
+========================================================================
+  TASK 3 — Walk-Forward Validation
+========================================================================
+  WF: gold_session_breakout  |  324 combos × 6m/3m/3m
+  (min 6 trades per IS window)
+
+Walk-Forward Optimisation — gold_session_breakout on XAUUSD
+  Grid: 648 parameter combinations
+  Windows: IS=6m  OOS=3m  step=3m
+  Min trades for valid IS run: 6
+  Costs: spread + dynamic slippage + commission (ALWAYS applied)
+
+Window 1/17 IS: 2020-07 → 2021-01  OOS: 2021-01 → 2021-04
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2020-12-17 04:00:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2020-12-16 08:30:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2020-12-17 04:00:00-05:00
+  IS  Sharpe=0.94  Return=+5.5%  Trades=46
+  OOS Sharpe=2.68  Return=+7.1%  Trades=22
+  Degradation ratio: 2.84  Best params: {'buffer_pips': 30, 'min_range_pips': 300, 'max_range_pips': 2500, 'sl_cap_pips': 1500, 'rr_ratio': 1.5, 'risk_per_trade_pct': 1.0, 'vpa_volume_mult': 1.2}
+
+Window 2/17 IS: 2020-10 → 2021-04  OOS: 2021-04 → 2021-07
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-25 10:00:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-01-21 14:00:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-01-27 10:45:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-01-25 10:00:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-01-21 14:00:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-01-27 10:45:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-01-27 10:45:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-01-25 09:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-01-27 10:45:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-02-02 09:15:00-05:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-01-27 08:15:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-01-27 08:15:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-02-01 03:15:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2021-02-02 08:45:00-05:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-02-02 08:45:00-05:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2021-02-01 03:15:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-02-04 07:30:00-05:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-02-02 08:45:00-05:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2021-02-01 03:15:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-02-03 11:30:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-02-04 07:30:00-05:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-02-02 08:45:00-05:00
+  IS  Sharpe=1.23  Return=+6.3%  Trades=55
+  OOS Sharpe=-0.86  Return=-2.2%  Trades=30
+  Degradation ratio: -0.70  Best params: {'buffer_pips': 30, 'min_range_pips': 500, 'max_range_pips': 2000, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.2}
+
+Window 3/17 IS: 2021-01 → 2021-07  OOS: 2021-07 → 2021-10
+  IS  Sharpe=1.90  Return=+4.1%  Trades=35
+  OOS Sharpe=-0.85  Return=-0.9%  Trades=19
+  Degradation ratio: -0.45  Best params: {'buffer_pips': 75, 'min_range_pips': 700, 'max_range_pips': 2500, 'sl_cap_pips': 1500, 'rr_ratio': 1.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.5}
+
+Window 4/17 IS: 2021-04 → 2021-10  OOS: 2021-10 → 2022-01
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.53% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.54% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+  IS  Sharpe=1.00  Return=+4.6%  Trades=38
+  OOS Sharpe=-1.32  Return=-3.3%  Trades=21
+  Degradation ratio: -1.32  Best params: {'buffer_pips': 75, 'min_range_pips': 700, 'max_range_pips': 2500, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 1.0, 'vpa_volume_mult': 1.5}
+
+Window 5/17 IS: 2021-07 → 2022-01  OOS: 2022-01 → 2022-04
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-13 07:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-08-17 08:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-17 08:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-11-10 13:15:00-05:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-09-09 10:45:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-09-09 10:45:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-19 14:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-26 05:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-11-10 13:30:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-08-19 14:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-13 07:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-17 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-20 09:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-17 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-26 08:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-11-10 13:30:00-05:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-19 15:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-09-09 10:45:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-08-19 14:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-26 05:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-11-10 13:30:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-19 14:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-12-02 06:00:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-09-16 03:15:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-12-02 04:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-11-10 13:30:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-11-10 08:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-07 04:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-07 04:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.36% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-12-02 06:00:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-09-16 03:15:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-11-22 06:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-11-10 13:30:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-11-10 13:00:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-08-19 10:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-07 04:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-07 04:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-27 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-27 08:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-07 04:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 09:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 05:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-14 07:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-27 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-20 09:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-07 04:45:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-21 09:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-07 04:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 05:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-07 05:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-07 04:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 04:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-14 07:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-19 08:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-13 08:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-09-09 09:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-09-09 09:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-10-07 04:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-08-19 07:45:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 04:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-08-19 08:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-14 07:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-09-09 09:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-09-09 09:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-08-19 08:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-07-26 09:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-09-16 03:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-19 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-12-02 06:00:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-09-30 08:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-09-30 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-20 09:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-08-19 08:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-21 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-19 10:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-08-19 10:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-12-02 06:30:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-09-30 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-09-30 08:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 08:45:00-04:00
+Total drawdown -9.58% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-20 09:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 08:45:00-04:00
+Total drawdown -9.59% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-06 07:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-20 08:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-06 08:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-07 04:30:00-04:00
+Total drawdown -9.42% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-07 04:00:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-07 04:15:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-06 08:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-10-20 08:15:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-07 04:00:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-10-20 09:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-07 04:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-27 08:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-10-07 04:15:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-07 04:15:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 05:00:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-10-27 10:30:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-08-18 06:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-07 05:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-08-18 06:45:00-04:00
+Total drawdown -10.00% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-26 04:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-09-09 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.23% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.97% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-08-18 06:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-07 05:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-08-18 06:45:00-04:00
+Total drawdown -9.99% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-10-26 04:30:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-09-09 10:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-17 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2021-09-09 09:45:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2021-10-13 08:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-08-17 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-07-27 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-26 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-26 09:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-26 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-26 09:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2021-11-30 10:45:00-05:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-19 07:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2021-10-04 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-11-17 10:30:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-07-26 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-09-30 08:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-26 09:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2021-10-28 08:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-07-26 09:45:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-11-30 10:45:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2021-08-18 07:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-11-17 10:30:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-10-07 08:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-04 10:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2021-08-18 07:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2021-10-28 10:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 07:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-19 07:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 07:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2021-11-16 08:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2021-10-28 08:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2021-10-14 09:30:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2021-10-28 10:45:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2021-10-19 12:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2021-11-16 09:00:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2021-10-19 10:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2021-10-19 10:30:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2021-10-27 10:00:00-04:00
+  IS  Sharpe=-0.98  Return=-2.4%  Trades=36
+  OOS Sharpe=2.96  Return=+3.8%  Trades=23
+  Degradation ratio: -3.03  Best params: {'buffer_pips': 75, 'min_range_pips': 700, 'max_range_pips': 2000, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.5}
+
+Window 6/17 IS: 2021-10 → 2022-04  OOS: 2022-04 → 2022-07
+  IS  Sharpe=2.47  Return=+8.0%  Trades=55
+  OOS Sharpe=0.79  Return=+1.4%  Trades=30
+  Degradation ratio: 0.32  Best params: {'buffer_pips': 30, 'min_range_pips': 300, 'max_range_pips': 2000, 'sl_cap_pips': 1000, 'rr_ratio': 1.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.2}
+
+Window 7/17 IS: 2022-01 → 2022-07  OOS: 2022-07 → 2022-10
+  IS  Sharpe=3.55  Return=+25.1%  Trades=51
+  OOS Sharpe=0.35  Return=+1.0%  Trades=25
+  Degradation ratio: 0.10  Best params: {'buffer_pips': 30, 'min_range_pips': 300, 'max_range_pips': 2000, 'sl_cap_pips': 1000, 'rr_ratio': 1.5, 'risk_per_trade_pct': 1.0, 'vpa_volume_mult': 1.2}
+
+Window 8/17 IS: 2022-04 → 2022-10  OOS: 2022-10 → 2023-01
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2022-09-28 06:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-09-28 06:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-28 06:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2022-09-28 06:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-28 06:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-09-28 06:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-28 03:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2022-09-28 06:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2022-09-28 06:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2022-09-28 06:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-28 06:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2022-09-28 06:15:00-04:00
+  IS  Sharpe=1.77  Return=+11.8%  Trades=41
+  OOS Sharpe=1.24  Return=+3.5%  Trades=19
+  Degradation ratio: 0.70  Best params: {'buffer_pips': 30, 'min_range_pips': 700, 'max_range_pips': 2500, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 1.0, 'vpa_volume_mult': 1.2}
+
+Window 9/17 IS: 2022-07 → 2023-01  OOS: 2023-01 → 2023-04
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2022-11-15 09:30:00-05:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2022-11-15 09:30:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2022-11-15 09:30:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2022-11-15 09:30:00-05:00
+  IS  Sharpe=0.83  Return=+3.4%  Trades=30
+  OOS Sharpe=-1.61  Return=-4.6%  Trades=25
+  Degradation ratio: -1.95  Best params: {'buffer_pips': 75, 'min_range_pips': 700, 'max_range_pips': 2000, 'sl_cap_pips': 1000, 'rr_ratio': 2.0, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.2}
+
+Window 10/17 IS: 2022-10 → 2023-04  OOS: 2023-04 → 2023-07
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-03-23 10:45:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+  IS  Sharpe=1.26  Return=+6.3%  Trades=46
+  OOS Sharpe=-2.49  Return=-5.1%  Trades=21
+  Degradation ratio: -1.98  Best params: {'buffer_pips': 50, 'min_range_pips': 500, 'max_range_pips': 2000, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.5}
+
+Window 11/17 IS: 2023-01 → 2023-07  OOS: 2023-07 → 2023-10
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-02-15 09:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-14 08:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-06-15 08:45:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-03-14 06:15:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-06-15 09:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-02-15 09:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-14 08:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-14 06:15:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2023-05-11 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-06-15 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-03-22 10:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-14 06:45:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-05-11 08:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-06-15 08:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.74% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-06-15 03:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-06-15 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-02-08 08:15:00-05:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-14 06:15:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-06-15 09:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-03-20 03:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-05-11 08:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.73% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-05-11 07:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2023-06-15 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-06-15 03:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-03-14 08:30:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-03-14 08:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-03-14 08:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.45% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.51% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-03-14 08:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 08:45:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.32% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-15 08:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2023-06-15 09:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-06-15 03:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2023-02-15 09:30:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-20 05:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-03-20 05:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-13 06:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-08 08:15:00-05:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-03-14 11:30:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-06-15 03:15:00-04:00
+Total drawdown -9.28% reached safety buffer (-9.0%) at 2023-06-15 09:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-06-15 09:30:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.43% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.34% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2023-03-13 06:15:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-08 08:15:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-14 11:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-05-08 09:30:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-05-11 08:15:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2023-05-11 08:30:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 10:30:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-02-16 12:00:00-05:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-03-14 10:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 10:30:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.37% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-02-16 12:00:00-05:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-16 10:45:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-16 11:30:00-05:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-02-08 08:30:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-07 07:15:00-05:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-16 11:30:00-05:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-02-08 08:15:00-05:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2023-03-20 03:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-07 07:15:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-03-20 05:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-02-08 08:00:00-05:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-03-15 05:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-02-16 11:30:00-05:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-02-08 08:00:00-05:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2023-03-14 10:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2023-03-20 03:45:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-02-08 08:00:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-13 06:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-15 05:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2023-02-16 11:15:00-05:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2023-03-15 06:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-13 05:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2023-02-08 08:00:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 10:45:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-15 09:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 10:30:00-05:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-07 10:45:00-05:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2023-03-20 03:45:00-04:00
+Total drawdown -9.51% reached safety buffer (-9.0%) at 2023-03-20 04:15:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2023-02-16 11:45:00-05:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2023-03-14 09:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2023-03-14 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2023-02-15 09:30:00-05:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-02-16 10:30:00-05:00
+  IS  Sharpe=-0.12  Return=-0.4%  Trades=42
+  OOS Sharpe=2.38  Return=+2.0%  Trades=15
+  Degradation ratio: -20.59  Best params: {'buffer_pips': 75, 'min_range_pips': 500, 'max_range_pips': 2000, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.5}
+
+Window 12/17 IS: 2023-04 → 2023-10  OOS: 2023-10 → 2024-01
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-05-18 05:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-05-18 04:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2023-05-18 05:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2023-05-18 04:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-05-18 04:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-05-18 04:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-05-18 04:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2023-05-18 04:15:00-04:00
+  IS  Sharpe=0.86  Return=+3.1%  Trades=26
+  OOS Sharpe=-1.37  Return=-3.4%  Trades=26
+  Degradation ratio: -1.60  Best params: {'buffer_pips': 75, 'min_range_pips': 300, 'max_range_pips': 2000, 'sl_cap_pips': 1000, 'rr_ratio': 1.5, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.5}
+
+Window 13/17 IS: 2023-07 → 2024-01  OOS: 2024-01 → 2024-04
+  IS  Sharpe=1.96  Return=+7.1%  Trades=28
+  OOS Sharpe=-0.85  Return=-1.8%  Trades=20
+  Degradation ratio: -0.43  Best params: {'buffer_pips': 50, 'min_range_pips': 700, 'max_range_pips': 2500, 'sl_cap_pips': 1000, 'rr_ratio': 1.5, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.5}
+
+Window 14/17 IS: 2023-10 → 2024-04  OOS: 2024-04 → 2024-07
+  IS  Sharpe=1.16  Return=+5.2%  Trades=46
+  OOS Sharpe=-2.72  Return=-4.4%  Trades=14
+  Degradation ratio: -2.34  Best params: {'buffer_pips': 30, 'min_range_pips': 300, 'max_range_pips': 2000, 'sl_cap_pips': 1500, 'rr_ratio': 1.5, 'risk_per_trade_pct': 0.8, 'vpa_volume_mult': 1.2}
+
+Window 15/17 IS: 2024-01 → 2024-07  OOS: 2024-07 → 2024-10
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.22% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.77% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-29 08:00:00-04:00
+Total drawdown -9.88% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.29% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.78% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.20% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-04-29 08:00:00-04:00
+Total drawdown -9.89% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-29 08:00:00-04:00
+Total drawdown -9.31% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.85% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.51% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-16 06:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-16 09:15:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-29 04:00:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.84% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.50% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-16 06:00:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-16 09:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.46% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-29 07:30:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-29 07:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 12:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-29 07:30:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-24 10:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 12:15:00-04:00
+Total drawdown -9.19% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-29 07:30:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-16 09:15:00-04:00
+Total drawdown -9.30% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-24 10:30:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.86% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-16 06:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-16 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.86% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.44% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-16 06:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-16 09:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.24% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-16 10:45:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.57% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.27% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.64% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-04-29 08:15:00-04:00
+Total drawdown -9.56% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.63% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-29 08:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.67% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-17 11:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.49% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.13% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.25% reached safety buffer (-9.0%) at 2024-04-15 04:45:00-04:00
+Total drawdown -9.21% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-30 09:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-04-29 08:00:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.60% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-17 11:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.26% reached safety buffer (-9.0%) at 2024-04-15 04:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-29 09:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-30 09:30:00-04:00
+Total drawdown -9.14% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.96% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.40% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.39% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+Total drawdown -9.16% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-29 06:30:00-04:00
+Total drawdown -9.35% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-17 12:15:00-04:00
+Total drawdown -9.82% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.33% reached safety buffer (-9.0%) at 2024-04-15 06:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-15 04:45:00-04:00
+Total drawdown -9.81% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-15 04:45:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-15 04:45:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-29 08:30:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-04-24 10:45:00-04:00
+  IS  Sharpe=0.55  Return=+1.6%  Trades=50
+  OOS Sharpe=2.88  Return=+4.4%  Trades=22
+  Degradation ratio: 5.24  Best params: {'buffer_pips': 30, 'min_range_pips': 300, 'max_range_pips': 2500, 'sl_cap_pips': 1500, 'rr_ratio': 2.0, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.2}
+
+Window 16/17 IS: 2024-04 → 2024-10  OOS: 2024-10 → 2025-01
+Total drawdown -9.15% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-07-30 11:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.17% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-07-30 11:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.18% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-07-30 11:15:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-07-16 06:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-07-16 06:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.66% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.48% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.05% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.06% reached safety buffer (-9.0%) at 2024-07-23 08:15:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-07-16 06:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.95% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.65% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.47% reached safety buffer (-9.0%) at 2024-07-17 10:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.09% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-04-17 12:00:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-07-16 06:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-07-22 14:45:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-07-23 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.11% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.07% reached safety buffer (-9.0%) at 2024-07-16 06:15:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.71% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-07-22 14:45:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-07-23 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.12% reached safety buffer (-9.0%) at 2024-07-24 13:45:00-04:00
+Total drawdown -9.01% reached safety buffer (-9.0%) at 2024-07-16 06:30:00-04:00
+Total drawdown -9.10% reached safety buffer (-9.0%) at 2024-07-16 08:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-07-22 14:45:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.70% reached safety buffer (-9.0%) at 2024-04-17 12:30:00-04:00
+Total drawdown -9.00% reached safety buffer (-9.0%) at 2024-07-23 09:00:00-04:00
+Total drawdown -9.04% reached safety buffer (-9.0%) at 2024-04-25 09:30:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.02% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-25 09:15:00-04:00
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+Total drawdown -9.03% reached safety buffer (-9.0%) at 2024-04-17 11:45:00-04:00
+  IS  Sharpe=0.67  Return=+1.7%  Trades=32
+  OOS Sharpe=1.28  Return=+2.1%  Trades=25
+  Degradation ratio: 1.90  Best params: {'buffer_pips': 75, 'min_range_pips': 300, 'max_range_pips': 2500, 'sl_cap_pips': 1500, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.2}
+
+Window 17/17 IS: 2024-07 → 2025-01  OOS: 2025-01 → 2025-04
+Total drawdown -9.08% reached safety buffer (-9.0%) at 2024-04-25 09:00:00-04:00
+  IS  Sharpe=2.62  Return=+9.9%  Trades=36
+  OOS Sharpe=1.32  Return=+2.3%  Trades=25
+  Degradation ratio: 0.50  Best params: {'buffer_pips': 75, 'min_range_pips': 500, 'max_range_pips': 2000, 'sl_cap_pips': 1000, 'rr_ratio': 2.5, 'risk_per_trade_pct': 0.5, 'vpa_volume_mult': 1.2}
+
+============================================================================
+WALK-FORWARD SUMMARY  |  gold_session_breakout on XAUUSD
+============================================================================
+Win      IS Period     OOS Period   IS Sh  IS Ret%  OOS Sh  OOS Ret%   Deg.  Trades(IS/OOS)
+----------------------------------------------------------------------------
+  1  2020-07→2021-01  2021-01→2021-04    0.94     +5.5%    2.68      +7.1%   2.84 ✓  46/22
+  2  2020-10→2021-04  2021-04→2021-07    1.23     +6.3%   -0.86      -2.2%  -0.70  55/30
+  3  2021-01→2021-07  2021-07→2021-10    1.90     +4.1%   -0.85      -0.9%  -0.45  35/19
+  4  2021-04→2021-10  2021-10→2022-01    1.00     +4.6%   -1.32      -3.3%  -1.32  38/21
+  5  2021-07→2022-01  2022-01→2022-04   -0.98     -2.4%    2.96      +3.8%  -3.03  36/23
+  6  2021-10→2022-04  2022-04→2022-07    2.47     +8.0%    0.79      +1.4%   0.32  55/30
+  7  2022-01→2022-07  2022-07→2022-10    3.55    +25.1%    0.35      +1.0%   0.10  51/25
+  8  2022-04→2022-10  2022-10→2023-01    1.77    +11.8%    1.24      +3.5%   0.70 ✓  41/19
+  9  2022-07→2023-01  2023-01→2023-04    0.83     +3.4%   -1.61      -4.6%  -1.95  30/25
+ 10  2022-10→2023-04  2023-04→2023-07    1.26     +6.3%   -2.49      -5.1%  -1.98  46/21
+ 11  2023-01→2023-07  2023-07→2023-10   -0.12     -0.4%    2.38      +2.0%  -20.59  42/15
+ 12  2023-04→2023-10  2023-10→2024-01    0.86     +3.1%   -1.37      -3.4%  -1.60  26/26
+ 13  2023-07→2024-01  2024-01→2024-04    1.96     +7.1%   -0.85      -1.8%  -0.43  28/20
+ 14  2023-10→2024-04  2024-04→2024-07    1.16     +5.2%   -2.72      -4.4%  -2.34  46/14
+ 15  2024-01→2024-07  2024-07→2024-10    0.55     +1.6%    2.88      +4.4%   5.24 ✓  50/22
+ 16  2024-04→2024-10  2024-10→2025-01    0.67     +1.7%    1.28      +2.1%   1.90 ✓  32/25
+ 17  2024-07→2025-01  2025-01→2025-04    2.62     +9.9%    1.32      +2.3%   0.50  36/25
+----------------------------------------------------------------------------
+Average degradation ratio: -1.34  (target > 0.6 per window, > 0.4 overall)
+
+⚠  WARNING: Strategy may be overfitted.  Average degradation ratio < 0.4.
+   Consider simplifying parameters or using fewer free variables.
+
+Recommended parameters:  {'buffer_pips': 75, 'max_range_pips': 2000, 'min_range_pips': 700, 'risk_per_trade_pct': 0.5, 'rr_ratio': 2.5, 'sl_cap_pips': 1500, 'vpa_volume_mult': 1.5}
+============================================================================
+
+  WF summary: avg_deg=-1.339  pos_OOS=9/17 (53%)
+  WF result: FAIL ✗
+
+========================================================================
+  TASK 4 — Combined Portfolio + Gold Standalone
+========================================================================
+  Building London S3 (full 2020-2025) + Gold (Jul 2020-Apr 2025)…
+
+  Combined (London S3 + Gold):
+    Avg monthly:  +0.919%
+    CAGR:         +10.72%
+    Sharpe:       +0.882
+    Max DD:       10.85%
+    Worst daily:  -2.490%
+    Days to +10%: 112
+    Pos months:   39/66
+    FTMO breaches: 0/22 windows
+
+  Gold STANDALONE (as sole FTMO strategy):
+    Avg monthly:  -0.184%
+    CAGR:         -2.46%
+    Sharpe:       -0.298
+    Max DD:       12.64%
+    Worst daily:  -0.867%
+    Days to +10%: not reached
+    Pos months:   21/46
+    FTMO breaches: 0/15 windows
+
+  Gold ↔ London correlation (daily returns): +0.088
+
+  Max simultaneous positions: 8 (7 London/NY + 1 Gold)
+  Peak combined risk (if all simultaneously open):
+    All London pairs: 5.2% + Gold: 0.8% = 6.0%
+    (realistic simultaneous peak: London 2-3 concurrent + Gold = 3-4%)
+
+  Gold Monthly Returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   -2.6   +0.6   +1.6   +0.0   +2.3   -1.0    +0.8%
+   2021   -2.1   +0.2   +2.8   +0.7   -0.6   +0.6   -0.0   -2.2   +2.1   -5.1   -0.5   +1.1    -3.0%
+   2022   -0.2   +2.2   +1.8   +0.0   -1.4   -0.2   +1.0   +0.3   -3.6   +1.3   -2.3   +1.8    +0.8%
+   2023   -0.2   -2.7   +5.0   -2.0   -2.6   -0.8   +1.1   +0.8   +1.2   -1.4   -1.8   -0.2    -3.7%
+   2024   +0.5   -1.6   +3.7   -6.0      —      —      —      —      —      —      —      —    -3.4%
+
+  Combined Monthly Returns:
+   Year    Jan    Feb    Mar    Apr    May    Jun    Jul    Aug    Sep    Oct    Nov    Dec     Ann%
+   2020      —      —      —      —      —      —   -6.1   -1.1  +15.0   +3.9   +0.3   -3.1    +8.9%
+   2021   -0.9   +1.4   +0.6   +0.5   -0.3   +5.6   +0.5   -1.8   +7.0   -2.3   -5.2   +4.3    +9.3%
+   2022   +1.1   +2.8  +13.1   +1.6   +1.8   -2.5   -0.7   +0.5   -2.6   +8.3   -1.5   +1.8   +23.7%
+   2023   -0.1   -0.9   +1.3   +1.5   -1.2   -0.5   +2.9   -0.0   +1.2   +2.1   +1.6   +4.2   +12.0%
+   2024   +1.5   -0.5   +2.2   -4.4   +0.0   -0.2   +0.7   -0.2   +2.3   -1.7   +1.0   -0.7    -0.1%
+   2025   -2.3   +5.5   +2.1   -2.7   +1.1   +0.1   +2.3   -0.9   -2.8   +1.1   +1.5   +1.8    +6.8%
+
+========================================================================
+  CONTEXT SUMMARY
+========================================================================
+
+  1. XAUUSD data quality:
+     186,240 bars  2020-01-01 → 2025-04-30  volume_ok=98.3%
+  2. Gold baseline (TP-A): T/mo=6.3  Sharpe=-0.043
+  3. VPA filter: 563/719 rejected (78%)  accepted WR=47.6%
+  4. WF: avg_deg=-1.339  9/17 pos OOS  → FAIL ✗
+  5–8. See Task 4 output above for combined/standalone stats and timeline.
+
+  Total runtime: 144.2 minutes
+
+Done.

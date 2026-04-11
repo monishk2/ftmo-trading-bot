@@ -30,5 +30,89 @@
       "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
       "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
     }
+  },
+  "EURJPY": {
+    "pip_size": 0.01,
+    "pip_value_per_lot": 8.0,
+    "typical_spread_pips": 1.4,
+    "commission_per_lot_round_trip": 3.0,
+    "slippage_model": {
+      "normal_pips": 0.4,
+      "session_open_pips": 2.0,
+      "session_open_window_minutes": 15,
+      "news_pips": 3.0
+    },
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
+  "GBPJPY": {
+    "pip_size": 0.01,
+    "pip_value_per_lot": 8.0,
+    "typical_spread_pips": 2.0,
+    "commission_per_lot_round_trip": 3.0,
+    "slippage_model": {
+      "normal_pips": 0.6,
+      "session_open_pips": 2.5,
+      "session_open_window_minutes": 15,
+      "news_pips": 4.0
+    },
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
+  "AUDUSD": {
+    "pip_size": 0.0001,
+    "typical_spread_pips": 1.2,
+    "commission_per_lot_round_trip": 3.0,
+    "slippage_model": {
+      "normal_pips": 0.3,
+      "session_open_pips": 1.5,
+      "session_open_window_minutes": 15,
+      "news_pips": 2.0
+    },
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
+  "XAUUSD": {
+    "pip_size": 0.01,
+    "pip_value_per_lot": 1.0,
+    "typical_spread_pips": 25.0,
+    "commission_per_lot_round_trip": 0.0,
+    "slippage_model": {
+      "normal_pips": 2.0,
+      "session_open_pips": 8.0,
+      "session_open_window_minutes": 15,
+      "news_pips": 15.0
+    },
+    "trading_sessions": {
+      "asian": {"start": "19:00", "end": "02:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
+  },
+  "USDJPY": {
+    "pip_size": 0.01,
+    "pip_value_per_lot": 8.0,
+    "typical_spread_pips": 1.2,
+    "commission_per_lot_round_trip": 3.0,
+    "slippage_model": {
+      "normal_pips": 0.3,
+      "session_open_pips": 1.5,
+      "session_open_window_minutes": 15,
+      "news_pips": 2.5
+    },
+    "trading_sessions": {
+      "asian": {"start": "00:00", "end": "03:00", "timezone": "US/Eastern"},
+      "london": {"start": "03:00", "end": "12:00", "timezone": "US/Eastern"},
+      "new_york": {"start": "09:30", "end": "16:00", "timezone": "US/Eastern"}
+    }
   }
 }

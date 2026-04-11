@@ -124,6 +124,18 @@ _H1_GRID = {
     "risk_per_trade_pct": [0.5, 0.7],
 }
 
+_GOLD_GRID = {
+    # Gold Session Breakout — 3×3×3×3×3×3×3 = 2187 combinations
+    # Reduce to manageable size: 3×3×2×2×3×3×2 = 324 combinations
+    "buffer_pips":          [30, 50, 75],
+    "min_range_pips":       [300, 500, 700],
+    "max_range_pips":       [2000, 2500],
+    "sl_cap_pips":          [1000, 1500],
+    "rr_ratio":             [1.5, 2.0, 2.5],
+    "risk_per_trade_pct":   [0.5, 0.8, 1.0],
+    "vpa_volume_mult":      [1.2, 1.5],
+}
+
 
 # ---------------------------------------------------------------------------
 # Data containers
@@ -224,10 +236,14 @@ def run_walk_forward(
         grid = _H1_GRID
         _build_strategy = _build_h1_strategy
         _base_config    = _load_h1_base_config()
+    elif strat_lower in ("gold_session_breakout", "gold_session", "gold"):
+        grid = _GOLD_GRID
+        _build_strategy = _build_gold_strategy
+        _base_config    = _load_gold_base_config()
     else:
         raise ValueError(f"Unknown strategy: {strategy_name!r}. "
                          "Use 'london_breakout', 'fvg_retracement', 'ny_session_breakout', "
-                         "'m15_momentum_scalping', or 'h1_trend_following'.")
+                         "'m15_momentum_scalping', 'h1_trend_following', or 'gold_session_breakout'.")
 
     # Caller-supplied grid takes precedence over the strategy-default grid
     if param_grid is not None:
@@ -483,6 +499,19 @@ def _build_ny_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
         float(base_cfg.get("max_asian_range_pips", 100)),
     )
     s = NYSessionBreakout()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_gold_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["gold_session_breakout"]
+
+
+def _build_gold_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.gold_session_breakout import GoldSessionBreakout
+    cfg = {**base_cfg, **params}
+    s = GoldSessionBreakout()
     s.setup(cfg, instrument_cfg)
     return s
 
