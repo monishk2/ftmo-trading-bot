@@ -181,6 +181,7 @@ class Backtester:
                 inst = json.load(fh)[self.instrument]
 
         self.pip_size: float            = inst["pip_size"]
+        self.pip_value_per_lot: float   = inst.get("pip_value_per_lot", PIP_VALUE_PER_LOT)
         self.spread_pips: float         = inst["typical_spread_pips"]
         self.slippage_model: Dict       = inst["slippage_model"]
         self.commission_per_lot: float  = inst["commission_per_lot_round_trip"]
@@ -229,7 +230,7 @@ class Backtester:
         sl_pips  = abs(entry - sl) / self.pip_size
         if sl_pips < 0.01:
             return 0.01
-        lot = risk_usd / (sl_pips * PIP_VALUE_PER_LOT)
+        lot = risk_usd / (sl_pips * self.pip_value_per_lot)
         lot = min(lot, 50.0)   # hard cap: never more than 50 lots on one trade
         return max(0.01, round(lot, 2))
 
@@ -240,7 +241,7 @@ class Backtester:
     def _floating_pnl(self, pos: Dict, close: float) -> float:
         """Unrealised P&L in USD (commission excluded, charged only on close)."""
         pnl_pips = pos["direction"] * (close - pos["entry_price"]) / self.pip_size
-        return pnl_pips * PIP_VALUE_PER_LOT * pos["lot_size"]
+        return pnl_pips * self.pip_value_per_lot * pos["lot_size"]
 
     # ------------------------------------------------------------------
     # Trade-management helpers (break-even / trailing stop)
@@ -348,7 +349,7 @@ class Backtester:
         """Build a closed Trade, deducting round-trip commission."""
         direction  = pos["direction"]
         pnl_pips   = direction * (exit_price - pos["entry_price"]) / self.pip_size
-        gross_usd  = pnl_pips * PIP_VALUE_PER_LOT * pos["lot_size"]
+        gross_usd  = pnl_pips * self.pip_value_per_lot * pos["lot_size"]
         commission = self.commission_per_lot * pos["lot_size"]
         pnl_usd    = gross_usd - commission
         pnl_pct    = pnl_usd / pos["balance_at_entry"] * 100.0
@@ -395,6 +396,236 @@ class Backtester:
     def _get_timestamp(row, key: str) -> Optional[pd.Timestamp]:
         val = row.get(key, None)
         return None if (val is None or pd.isna(val)) else val
+
+    # ------------------------------------------------------------------
+    # Fast sparse loop (for high-frequency data like M1)
+    # ------------------------------------------------------------------
+
+    def run_fast(self) -> BacktestResult:
+        """
+        Sparse backtester — iterates only signal bars + bars while a position
+        is open. Skips idle bars entirely.
+
+        ~15-20x faster than run() for strategies with O(200) annual signals
+        on M1 data (~700k bars). Designed for WF grid search.
+
+        Limitations vs run():
+        - Trailing stop (trail_atr_mult) not supported.
+        - Break-even is supported.
+        - Equity curve is sparse (only records bars with open position +
+          first bar of each new day). Metrics remain accurate because
+          metrics.py resamples to daily anyway.
+        """
+        df = self.strategy.generate_signals(self.df.copy())
+        n  = len(df)
+
+        if n == 0:
+            empty_eq = pd.Series({df.index[0]: float(self.initial_balance)})
+            return BacktestResult([], empty_eq, pd.Series(dtype=float), {},
+                                  self.initial_balance, self.initial_balance)
+
+        idx      = df.index
+        dates    = idx.date                          # array of datetime.date
+        highs    = df["high"].to_numpy(dtype=float)
+        lows     = df["low"].to_numpy(dtype=float)
+        closes   = df["close"].to_numpy(dtype=float)
+        sig_arr  = df["signal"].fillna(0).to_numpy(dtype=float)
+        sl_arr   = (df["sl_price"].to_numpy(dtype=float)
+                    if "sl_price" in df.columns else np.full(n, np.nan))
+        tp_arr   = (df["tp_price"].to_numpy(dtype=float)
+                    if "tp_price" in df.columns else np.full(n, np.nan))
+        has_ts   = "time_stop" in df.columns
+        ts_col   = df["time_stop"].to_numpy() if has_ts else None
+
+        # Signal positions (sorted ascending)
+        sig_pos  = np.where(sig_arr != 0)[0]
+
+        if len(sig_pos) == 0:
+            eq = pd.Series({idx[0]: self.initial_balance, idx[-1]: self.initial_balance})
+            return BacktestResult([], eq, pd.Series(dtype=float), {},
+                                  self.initial_balance, self.initial_balance)
+
+        loose_ftmo = (
+            self.daily_loss_trigger_pct >= 90.0 and
+            self.total_loss_trigger_pct >= 90.0
+        )
+
+        balance          = float(self.initial_balance)
+        trades: List[Trade] = []
+        eq_curve: Dict   = {}
+        day_pnl: Dict    = {}
+        midnight_balance = balance
+        prev_date        = None
+        halt_reason: Optional[str] = None
+        blocked_dates: set = set()       # dates where daily limit was hit
+        last_exit_idx    = -1            # skip signals while a position is open
+
+        # Seed equity at first bar
+        prev_date = dates[0]
+        eq_curve[idx[0]] = balance
+
+        for sig_idx in sig_pos:
+            # Skip signals that fall inside a currently open trade
+            if sig_idx <= last_exit_idx:
+                continue
+            d = dates[sig_idx]
+
+            # Update day_pnl for any days elapsed since last trade
+            if prev_date is not None and d != prev_date:
+                day_pnl[prev_date] = balance - midnight_balance
+                midnight_balance   = balance
+                prev_date          = d
+
+            if d in blocked_dates:
+                continue
+
+            sig = int(sig_arr[sig_idx])
+            sl  = float(sl_arr[sig_idx])
+            tp  = float(tp_arr[sig_idx])
+            if np.isnan(sl) or np.isnan(tp):
+                continue
+
+            entry_ts    = idx[sig_idx]
+            entry_price = self._calc_entry_price(closes[sig_idx], sig, entry_ts)
+
+            # Guard: SL must be on correct side of entry
+            if (sig == 1 and sl >= entry_price) or (sig == -1 and sl <= entry_price):
+                continue
+
+            lot_size         = self._auto_lot_size(balance, entry_price, sl)
+            orig_dist        = abs(entry_price - sl)
+            current_sl       = sl
+            be_triggered     = False
+            balance_at_entry = balance
+
+            # Time-stop
+            ts_stop = None
+            if has_ts:
+                raw = ts_col[sig_idx]
+                if raw is not None and not (isinstance(raw, float) and np.isnan(raw)):
+                    ts_stop = pd.Timestamp(raw)
+
+            eq_curve[entry_ts] = balance   # entry bar: position just opened
+
+            exit_idx    = n - 1
+            exit_price  = closes[n - 1]
+            exit_reason = "end_of_data"
+            cur_date    = d
+
+            for j in range(sig_idx + 1, n):
+                jts   = idx[j]
+                jdate = dates[j]
+
+                # ── Day boundary ─────────────────────────────────────
+                if jdate != cur_date:
+                    floating = (sig * (closes[j - 1] - entry_price)
+                                / self.pip_size * self.pip_value_per_lot * lot_size)
+                    day_pnl[cur_date]  = (balance + floating) - midnight_balance
+                    midnight_balance   = balance          # reset to realised balance
+                    cur_date           = jdate
+                    prev_date          = jdate
+
+                    if not loose_ftmo:
+                        equity  = balance + floating
+                        dd_pct  = (equity - midnight_balance) / max(midnight_balance, 1.0) * 100.0
+                        if dd_pct <= -self.daily_loss_trigger_pct:
+                            blocked_dates.add(jdate)
+                            exit_idx = j; exit_price = closes[j]; exit_reason = "ftmo_daily"
+                            break
+                        tot_pct = (equity - self.initial_balance) / self.initial_balance * 100.0
+                        if tot_pct <= -self.total_loss_trigger_pct:
+                            exit_idx = j; exit_price = closes[j]; exit_reason = "ftmo_total"
+                            halt_reason = f"Total drawdown {tot_pct:.2f}% at {jts}"
+                            break
+
+                # ── Break-even ───────────────────────────────────────
+                if self.break_even_r is not None and not be_triggered:
+                    be_target = entry_price + sig * orig_dist * self.break_even_r
+                    hit_be = (
+                        (sig ==  1 and highs[j] >= be_target) or
+                        (sig == -1 and lows[j]  <= be_target)
+                    )
+                    if hit_be:
+                        new_sl = entry_price + sig * self.pip_size
+                        if (sig == 1 and new_sl > current_sl) or (sig == -1 and new_sl < current_sl):
+                            current_sl = new_sl
+                        be_triggered = True
+
+                # ── SL / TP check ────────────────────────────────────
+                hit_sl = (sig ==  1 and lows[j]  <= current_sl) or (sig == -1 and highs[j] >= current_sl)
+                hit_tp = (sig ==  1 and highs[j] >= tp)         or (sig == -1 and lows[j]  <= tp)
+
+                if hit_sl or hit_tp:
+                    exit_idx = j
+                    if hit_sl:
+                        exit_price, exit_reason = current_sl, "sl"   # SL wins on tie
+                    else:
+                        exit_price, exit_reason = tp, "tp"
+                    break
+
+                # ── Time stop ────────────────────────────────────────
+                if ts_stop is not None and jts >= ts_stop:
+                    exit_idx = j; exit_price = closes[j]; exit_reason = "time_stop"
+                    break
+
+                # ── Record equity (floating) ─────────────────────────
+                floating = (sig * (closes[j] - entry_price)
+                            / self.pip_size * self.pip_value_per_lot * lot_size)
+                eq_curve[jts] = balance + floating
+
+            # ── Close trade ──────────────────────────────────────────
+            trade = self._close_position(
+                {
+                    "entry_time":       entry_ts,
+                    "direction":        sig,
+                    "entry_price":      entry_price,
+                    "sl":               current_sl,
+                    "tp":               tp,
+                    "lot_size":         lot_size,
+                    "balance_at_entry": balance_at_entry,
+                },
+                exit_price,
+                idx[exit_idx],
+                exit_reason,
+            )
+            trades.append(trade)
+            balance      += trade.pnl_dollars
+            eq_curve[idx[exit_idx]] = balance
+            prev_date    = dates[exit_idx]
+            last_exit_idx = exit_idx      # no new trade can open before this bar
+
+            if halt_reason or exit_reason == "ftmo_total":
+                break
+
+            if not loose_ftmo:
+                tot_pct = (balance - self.initial_balance) / self.initial_balance * 100.0
+                if tot_pct <= -self.total_loss_trigger_pct:
+                    halt_reason = f"Total drawdown {tot_pct:.2f}% at {idx[exit_idx]}"
+                    break
+
+        # Final day P&L bucket
+        if prev_date is not None:
+            day_pnl[prev_date] = balance - midnight_balance
+
+        eq_curve[idx[-1]] = balance   # ensure series ends at final balance
+
+        config = {
+            "instrument":      self.instrument,
+            "initial_balance": self.initial_balance,
+            "phase":           self.phase,
+            "strategy_name":   self.strategy.name,
+            "ftmo_rules":      self.ftmo_rules,
+        }
+
+        return BacktestResult(
+            trades=trades,
+            equity_curve=pd.Series(eq_curve).sort_index(),
+            daily_pnl=pd.Series(day_pnl),
+            config=config,
+            initial_balance=self.initial_balance,
+            final_balance=balance,
+            ftmo_halt_reason=halt_reason,
+        )
 
     # ------------------------------------------------------------------
     # Main loop

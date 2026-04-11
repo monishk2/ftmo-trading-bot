@@ -1,0 +1,99 @@
+========================================================================
+PROMPT 22 — Gold M1 Sweep Reversal with H4 Trend Guard
+========================================================================
+
+========================================================================
+TASK 0: M1 Data Verification
+========================================================================
+Total bars:     1,599,840
+Date range:     2022-01-01 00:00:00+00:00 → 2025-02-04 23:59:00+00:00
+Volume non-zero: 1,077,289 (67.3%)
+File size:      26.5 MB
+Weekday gaps >10min: 1
+  Largest: 480.0h at 2025-01-30 19:00:00-05:00
+  2021:     300 bars | vol>0: 0.0%
+  2022: 525,600 bars | vol>0: 67.5%
+  2023: 525,600 bars | vol>0: 67.2%
+  2024: 527,040 bars | vol>0: 67.5%
+  2025:  21,300 bars | vol>0: 64.8%
+
+Data PASS — ready for M1 backtesting.
+
+========================================================================
+TASK 1: run_fast() Sanity Check (3-month M1 slice)
+========================================================================
+                       run_fast()        run()
+Trades                         45           43
+Final balance             9022.08      8916.15
+Time (s)                     1.04         4.66
+Speedup: 4.5x
+Trade count: MISMATCH — fast=45 slow=43
+  fast total P&L: -977.92  slow: -1083.85
+
+========================================================================
+TASK 2: Baseline Backtest (Jan 2022 – Feb 2025)
+========================================================================
+
+--- Full period (Apr 2022 → Feb 2025) ---
+
+  [WITH H4 trend guard]
+  Trades=317  T/mo=9.6  WR=23.0%  Sharpe=-4.111
+  Return=-59.68%  MaxDD=62.86%
+
+  [WITHOUT H4 trend guard]
+  Trades=431  T/mo=12.7  WR=24.8%  Sharpe=-3.316
+  Return=-63.07%  MaxDD=65.91%
+
+--- 2024 isolation ---
+
+  [2024 WITH guard]
+  Trades=133  T/mo=11.1  WR=18.1%  Sharpe=-7.965
+  Return=-44.54%  MaxDD=48.15%
+
+  [2024 WITHOUT guard]
+  Trades=176  T/mo=14.7  WR=20.4%  Sharpe=-5.969
+  Return=-46.95%  MaxDD=49.71%
+
+  Avg SL (with guard): 179.5 pips  median=160.8  max=411.8
+
+  Direction split: LONG=156  SHORT=161
+
+Baseline gate: T/mo=9.6  Sharpe=-4.111
+Baseline too weak — stopping early. Strategy DEAD.
+
+========================================================================
+CONTEXT SUMMARY FOR NEXT PROMPT
+========================================================================
+
+1. M1 Data
+   File:      XAUUSD_1m.parquet  (1,599,840 bars, Jan 2022 – Feb 2025)
+   Volume:    67.3% non-zero
+   pip_size:  0.01  pip_value: $1/lot  spread: 25 pips
+
+2. Baseline (WITH H4 trend guard, Apr 2022–Feb 2025)
+   Trades:    317  T/mo=9.6
+   WR:        23.0%  Sharpe=-4.111
+   Return:    -59.68%  MaxDD=62.86%
+
+3. 2024 Comparison
+   WITH guard:    Trades=133  Return=-44.54%  Sharpe=-7.965
+   WITHOUT guard: Trades=176  Return=-46.95%  Sharpe=-5.969
+
+4. Walk-Forward (4m IS / 2m OOS / 2m step, 288 combos, min 5 trades)
+   Windows:   0
+   avg_deg:   nan  (threshold: >0.15)
+   Pos OOS:   0/0
+   VERDICT:   FAIL ✗
+   Rec params: {}
+
+5. FTMO 15-Day Eval: SKIPPED
+
+6. H4 Trend Guard Design
+   Threshold: 500.0 pips displacement over 10 H4 bars
+   EMA period: 50
+   Logic: uptrend → LONG only; downtrend → SHORT only; neutral → both
+
+7. Strategy Status
+   M15 GoldSweepReversal: DEAD (WF avg_deg=+0.089, 2024=-31%)
+   M1 GoldM1SweepReversal: WF FAILED
+   Next candidate if this DEAD: daily/H4 swing strategies on different pairs

@@ -148,6 +148,18 @@ _SWEEP_GRID = {
     "regime_atr_percentile": [35, 45],
 }
 
+_M1_SWEEP_GRID = {
+    # Gold M1 Sweep Reversal — 3×2×2×3×2×2×2 = 288 combos
+    # trend_guard_threshold fixed at 500 (design hypothesis, not searched)
+    "sweep_min_pips":       [20, 30, 40],
+    "sl_buffer_pips":       [5, 8],
+    "sl_cap_pips":          [300, 500],
+    "rr_ratio":             [2.0, 2.5, 3.0],
+    "risk_per_trade_pct":   [1.0, 1.5],
+    "candle_body_atr_min":  [0.2, 0.4],
+    "volume_mult":          [1.0, 1.5],
+}
+
 
 # ---------------------------------------------------------------------------
 # Data containers
@@ -200,6 +212,7 @@ def run_walk_forward(
     verbose: bool = True,
     param_grid: Optional[Dict[str, List]] = None,
     base_config_overrides: Optional[Dict] = None,
+    use_fast_runner: bool = False,
 ) -> WalkForwardResult:
     """
     Execute walk-forward optimisation.
@@ -256,11 +269,16 @@ def run_walk_forward(
         grid = _SWEEP_GRID
         _build_strategy = _build_sweep_strategy
         _base_config    = _load_sweep_base_config()
+    elif strat_lower in ("gold_m1_sweep_reversal", "gold_m1_sweep", "m1_sweep"):
+        grid = _M1_SWEEP_GRID
+        _build_strategy = _build_m1_sweep_strategy
+        _base_config    = _load_m1_sweep_base_config()
+        use_fast_runner = True   # M1 data: always use sparse runner
     else:
         raise ValueError(f"Unknown strategy: {strategy_name!r}. "
                          "Use 'london_breakout', 'fvg_retracement', 'ny_session_breakout', "
                          "'m15_momentum_scalping', 'h1_trend_following', 'gold_session_breakout', "
-                         "or 'gold_sweep_reversal'.")
+                         "'gold_sweep_reversal', or 'gold_m1_sweep_reversal'.")
 
     # Caller-supplied grid takes precedence over the strategy-default grid
     if param_grid is not None:
@@ -302,17 +320,19 @@ def run_walk_forward(
         best_params: Optional[Dict]  = None
         best_sharpe:                 float = -np.inf
 
+        _run = (lambda bt: bt.run_fast()) if use_fast_runner else (lambda bt: bt.run())
+
         for combo_idx, params in enumerate(param_combos):
             try:
                 strategy = _build_strategy(_base_config, params, instrument_cfg)
-                result   = Backtester(
+                result   = _run(Backtester(
                     strategy=strategy,
                     df=is_df,
                     instrument=instrument,
                     initial_balance=initial_balance,
                     phase=phase,
                     seed=combo_idx,        # deterministic per combo
-                ).run()
+                ))
 
                 if len(result.trades) < min_trades:
                     continue
@@ -333,19 +353,19 @@ def run_walk_forward(
 
         # ── Re-run IS with best params to get return % ────────────────
         is_strat   = _build_strategy(_base_config, best_params, instrument_cfg)
-        is_result  = Backtester(
+        is_result  = _run(Backtester(
             strategy=is_strat, df=is_df, instrument=instrument,
             initial_balance=initial_balance, phase=phase, seed=0,
-        ).run()
+        ))
         is_return  = (is_result.final_balance - initial_balance) / initial_balance * 100.0
         is_trades  = len(is_result.trades)
 
         # ── Out-of-sample run with frozen best params ─────────────────
         oos_strat  = _build_strategy(_base_config, best_params, instrument_cfg)
-        oos_result = Backtester(
+        oos_result = _run(Backtester(
             strategy=oos_strat, df=oos_df, instrument=instrument,
             initial_balance=initial_balance, phase=phase, seed=0,
-        ).run()
+        ))
         oos_sharpe, _ = _risk_adjusted(oos_result.equity_curve)
         oos_return    = (oos_result.final_balance - initial_balance) / initial_balance * 100.0
         oos_trades    = len(oos_result.trades)
@@ -555,6 +575,19 @@ def _build_sweep_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
     from strategies.gold_sweep_reversal import GoldSweepReversal
     cfg = {**base_cfg, **params}
     s = GoldSweepReversal()
+    s.setup(cfg, instrument_cfg)
+    return s
+
+
+def _load_m1_sweep_base_config() -> Dict:
+    with open(_CONFIG_DIR / "strategy_params.json") as fh:
+        return json.load(fh)["gold_m1_sweep_reversal"]
+
+
+def _build_m1_sweep_strategy(base_cfg: Dict, params: Dict, instrument_cfg: Dict):
+    from strategies.gold_m1_sweep_reversal import GoldM1SweepReversal
+    cfg = {**base_cfg, **params}
+    s = GoldM1SweepReversal()
     s.setup(cfg, instrument_cfg)
     return s
 
