@@ -1,0 +1,87 @@
+========================================================================
+Prompt 24: Gold ICT Sweep-to-FVG
+venv Python 3.13.2 | pandas 3.0.2
+========================================================================
+
+========================================================================
+TASK 0: Spread Verification
+========================================================================
+  instruments.json spread: 20.0 pips = $0.20/unit
+  Applied: ENTRY only (half-spread = 10.0 pips = $0.100)
+  Exit at exact SL/TP price — no spread at exit (consistent with framework)
+  Commission: $0.00/lot round trip
+  Effective entry cost on 100-pip SL: 10/100 = 10.0%
+  Spread is per-trade (at entry), NOT per-bar. Correct.
+
+========================================================================
+TASK 7: M15 GoldSweepReversal @20-pip spread vs @12-pip (Prompt 23)
+========================================================================
+  Prompt 23 result @12pip: Sharpe = 0.762
+  Current spread: 20 pips
+
+  @20pip (6s):
+    Trades=471  WR=38.0%  Return=71.04%
+    Sharpe=0.704  MaxDD=28.87%
+
+  Sharpe: 12pip=0.762  →  20pip=0.704  (Δ=-0.058)
+  GoldSweepReversal still positive at 20-pip spread (Sharpe=0.704)
+
+  Loading M1 data...
+  Full:   1,339,200 bars  (2022-07-01 → 2025-02-04)
+  Recent: 548,640 bars  (2024-01-01 → 2025-02-04)
+
+  Detecting setups (full range)...
+  Full setup detection: 42s  | 596 setups
+  Detecting setups (recent 2024-2025)...
+  Recent setup detection: 16s  | 282 setups
+
+========================================================================
+TASK 4: Baseline Backtests — Full Range & Recent
+========================================================================
+
+  [4A] FULL RANGE (Jul 2022 → Feb 2025)
+  Funnel: sweeps=5912  disp+FVG=1819  retests=1522  traded=596
+  Sweep→FVG rate:  30.8%
+  FVG→retest rate: 83.7%
+  Retest→trade rate: 39.2%
+  Simulation: 0.3s
+  Full range
+    Trades=547  T/mo=17.5
+    WR=34.2%  AvgWin=$111  AvgLoss=$69  PF=0.838
+    Return=-40.21%  Sharpe=-1.802  MaxDD=47.27%
+    AvgSL=170.8pips  Final=$5,979
+
+  Exit breakdown (n=547):
+    be_sl       :  84 (15%)
+    sl          : 359 (66%)
+    time_stop   :   3 (1%)
+    tp2         : 101 (18%)
+
+  Confluence score → WR (does higher score = higher WR?):
+    Score 3: n=366  WR=34%  AvgP&L=$-10
+    Score 4: n=143  WR=32%  AvgP&L=$-12
+    Score 5: n= 37  WR=49%  AvgP&L=$+35
+    Score 6: n=  1  WR=0%  AvgP&L=$-106
+
+  [4B] RECENT (Jan 2024 → Feb 2025)
+  Funnel: sweeps=2826  disp+FVG=892  retests=734  traded=282
+  Recent 2024-2025
+    Trades=263  T/mo=20.0
+    WR=31.2%  AvgWin=$113  AvgLoss=$70  PF=0.735
+    Return=-33.53%  Sharpe=-3.255  MaxDD=39.25%
+    AvgSL=172.9pips  Final=$6,647
+
+  Trades/month (recent): 20.0
+
+  Loading 2023-2025 data for WF...
+
+  WF SKIPPED: full-range Sharpe=-1.802 < -1.0 gate
+
+========================================================================
+TASK 6: FTMO Eval Simulation (15-day windows, 2024-2025)
+========================================================================
+  SKIPPED: Recent Sharpe=-3.255 <= 0.3 threshold
+
+========================================================================
+Prompt 24 COMPLETE
+========================================================================
