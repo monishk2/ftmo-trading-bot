@@ -127,7 +127,9 @@ class Trade:
     pnl_pct:       float        # relative to balance at entry
     strategy_name: str
     instrument:    str
-    exit_reason:   str          # sl | tp | time_stop | ftmo_daily | ftmo_total | end_of_data
+    exit_reason:   str          # sl | tp | tp1 | tp2 | sl_after_tp1 | time_stop | ftmo_daily | ftmo_total | end_of_data
+    trade_id:      int   = 0   # groups tp1_slice + remainder from the same signal (0 = not partial)
+    segment:       str   = "full"  # "full" | "tp1_slice" | "remainder"
 
 
 @dataclass
@@ -416,6 +418,47 @@ class Backtester:
             strategy_name=self.strategy.name,
             instrument=self.instrument,
             exit_reason=exit_reason,
+        )
+
+    def _make_partial_trade(
+        self,
+        entry_price: float,
+        exit_price: float,
+        direction: int,
+        lot_size: float,
+        entry_time: pd.Timestamp,
+        exit_time: pd.Timestamp,
+        exit_reason: str,
+        segment: str,
+        trade_id: int,
+        balance_at_entry: float,
+        sl: float = float("nan"),
+        tp: float = float("nan"),
+    ) -> Trade:
+        """Build a partial-close Trade segment."""
+        pnl_pips   = direction * (exit_price - entry_price) / self.pip_size
+        gross_usd  = pnl_pips * self.pip_value_per_lot * lot_size
+        commission = self.commission_per_lot * lot_size
+        pnl_usd    = gross_usd - commission
+        pnl_pct    = pnl_usd / max(balance_at_entry, 1.0) * 100.0
+        strat_name = getattr(self.strategy, "name", "unknown")
+        return Trade(
+            entry_time=entry_time,
+            exit_time=exit_time,
+            direction=direction,
+            entry_price=entry_price,
+            exit_price=exit_price,
+            sl=sl,
+            tp=tp,
+            lot_size=lot_size,
+            pnl_pips=pnl_pips,
+            pnl_dollars=pnl_usd,
+            pnl_pct=pnl_pct,
+            strategy_name=strat_name,
+            instrument=self.instrument,
+            exit_reason=exit_reason,
+            trade_id=trade_id,
+            segment=segment,
         )
 
     # ------------------------------------------------------------------
@@ -1090,6 +1133,346 @@ class Backtester:
 
         # Use a dummy strategy name if strategy lacks a name
         strat_name = getattr(self.strategy, "name", "news_m1_bracket")
+
+        config = {
+            "instrument":      self.instrument,
+            "initial_balance": self.initial_balance,
+            "phase":           self.phase,
+            "strategy_name":   strat_name,
+        }
+        return BacktestResult(
+            trades=trades,
+            equity_curve=pd.Series(eq_curve).sort_index(),
+            daily_pnl=pd.Series(day_pnl),
+            config=config,
+            initial_balance=self.initial_balance,
+            final_balance=balance,
+            ftmo_halt_reason=halt_reason,
+        )
+
+    # ------------------------------------------------------------------
+    # Partial-profit backtester
+    # ------------------------------------------------------------------
+
+    def run_partial(
+        self,
+        kill_pct: Optional[float] = None,
+        trail_variant: str = "v1",
+        trail_factor: float = 1.0,
+    ) -> BacktestResult:
+        """
+        Backtester that supports partial profit closes (TP1 + TP2 with trailing).
+
+        Strategy must emit these extra columns (all optional — falls back to
+        regular full-close behaviour if absent):
+          tp1_price      float  — first partial TP level
+          tp1_pct        float  — fraction of position to close at TP1 (0-1, default 0.5)
+          trail_distance float  — price-unit trailing distance after TP1
+
+        tp_price (the existing column) is treated as TP2 (final TP).
+
+        Each signal that has a valid tp1_price produces TWO Trade objects:
+          segment="tp1_slice"  — closed at TP1
+          segment="remainder"  — closed at TP2 / trailing stop / SL / time_stop
+
+        Both share the same trade_id so callers can group them.
+        If tp1_price is NaN, one Trade with segment="full" is emitted.
+
+        kill_pct : if set, stops trading for the day once realized daily
+                   P&L reaches -kill_pct% of initial balance.
+        """
+        df = self.strategy.generate_signals(self.df.copy())
+        n  = len(df)
+
+        if n == 0:
+            empty_eq = pd.Series({df.index[0]: float(self.initial_balance)})
+            return BacktestResult([], empty_eq, pd.Series(dtype=float), {},
+                                  self.initial_balance, self.initial_balance)
+
+        idx      = df.index
+        dates    = idx.date
+        highs    = df["high"].to_numpy(dtype=float)
+        lows     = df["low"].to_numpy(dtype=float)
+        closes   = df["close"].to_numpy(dtype=float)
+        sig_arr  = df["signal"].fillna(0).to_numpy(dtype=float)
+        sl_arr   = (df["sl_price"].to_numpy(dtype=float)
+                    if "sl_price" in df.columns else np.full(n, np.nan))
+        tp_arr   = (df["tp_price"].to_numpy(dtype=float)
+                    if "tp_price" in df.columns else np.full(n, np.nan))
+        tp1_arr  = (df["tp1_price"].to_numpy(dtype=float)
+                    if "tp1_price" in df.columns else np.full(n, np.nan))
+        tp1p_arr = (df["tp1_pct"].to_numpy(dtype=float)
+                    if "tp1_pct" in df.columns else np.full(n, 0.5))
+        trail_arr = (df["trail_distance"].to_numpy(dtype=float)
+                     if "trail_distance" in df.columns else np.full(n, 0.0))
+        has_ts   = "time_stop" in df.columns
+        ts_col   = df["time_stop"].to_numpy() if has_ts else None
+
+        sig_pos = np.where(sig_arr != 0)[0]
+        if len(sig_pos) == 0:
+            eq = pd.Series({idx[0]: self.initial_balance, idx[-1]: self.initial_balance})
+            return BacktestResult([], eq, pd.Series(dtype=float), {},
+                                  self.initial_balance, self.initial_balance)
+
+        loose_ftmo = (
+            self.daily_loss_trigger_pct >= 90.0 and
+            self.total_loss_trigger_pct >= 90.0
+        )
+
+        pvpl             = self.pip_value_per_lot
+        ps               = self.pip_size
+        strat_name       = getattr(self.strategy, "name", "unknown")
+
+        balance          = float(self.initial_balance)
+        trades: List[Trade] = []
+        eq_curve: Dict   = {}
+        day_pnl: Dict    = {}
+        midnight_balance = balance
+        prev_date        = dates[0]
+        halt_reason: Optional[str] = None
+        blocked_dates: set = set()
+        kill_blocked: set  = set()
+        last_exit_idx      = -1
+        trade_counter      = 0
+
+        eq_curve[idx[0]]   = balance
+        kill_usd = (abs(kill_pct) / 100.0 * self.initial_balance) if kill_pct else None
+
+        for sig_idx in sig_pos:
+            if sig_idx <= last_exit_idx:
+                continue
+            d = dates[sig_idx]
+
+            if prev_date != d:
+                day_pnl[prev_date] = balance - midnight_balance
+                midnight_balance   = balance
+                prev_date          = d
+
+            if d in blocked_dates or d in kill_blocked:
+                continue
+            if halt_reason:
+                break
+
+            sig = int(sig_arr[sig_idx])
+            sl  = float(sl_arr[sig_idx])
+            tp2 = float(tp_arr[sig_idx])
+            tp1 = float(tp1_arr[sig_idx])
+            tp1p = float(tp1p_arr[sig_idx]) if not np.isnan(tp1p_arr[sig_idx]) else 0.5
+            td   = float(trail_arr[sig_idx]) if not np.isnan(trail_arr[sig_idx]) else 0.0
+
+            if np.isnan(sl) or np.isnan(tp2):
+                continue
+
+            use_partial = not np.isnan(tp1)
+
+            entry_ts    = idx[sig_idx]
+            entry_price = self._calc_entry_price(closes[sig_idx], sig, entry_ts)
+
+            if (sig == 1 and sl >= entry_price) or (sig == -1 and sl <= entry_price):
+                continue
+
+            lot_size         = self._auto_lot_size(balance, entry_price, sl)
+            balance_at_entry = balance
+
+            if use_partial:
+                lot1 = max(0.01, round(lot_size * tp1p, 2))
+                lot2 = max(0.01, round(lot_size - lot1, 2))
+                if lot2 < 0.01:
+                    use_partial = False   # can't split — treat as full
+                    lot1 = lot_size
+                    lot2 = 0.0
+            else:
+                lot1 = lot_size
+                lot2 = 0.0
+
+            ts_stop = None
+            if has_ts:
+                raw = ts_col[sig_idx]
+                if raw is not None and not (isinstance(raw, float) and np.isnan(raw)):
+                    ts_stop = pd.Timestamp(raw)
+
+            trade_counter += 1
+            tid = trade_counter
+
+            cur_sl         = sl
+            orig_sl        = sl      # preserved for V2 (keep original after TP1)
+            orig_dist      = abs(entry_price - sl)
+            tp1_hit        = False
+            trail_extreme  = 0.0
+            _trail_active  = False   # used by V2/V4 variants
+            t1_pnl         = 0.0     # realized P&L from tp1_slice segment
+            cur_date       = d
+            eq_curve[entry_ts] = balance
+
+            # V5: no partial — close full at TP2
+            _use_partial_here = use_partial and (trail_variant != "v5")
+
+            broke_inner = False
+
+            for j in range(sig_idx + 1, n):
+                jts   = idx[j]
+                jdate = dates[j]
+
+                # ── Day boundary ─────────────────────────────────────────
+                if jdate != cur_date:
+                    if tp1_hit:
+                        fl = sig * (closes[j - 1] - entry_price) / ps * pvpl * lot2
+                    else:
+                        fl = sig * (closes[j - 1] - entry_price) / ps * pvpl * lot_size
+                    day_pnl[cur_date] = (balance + fl) - midnight_balance
+                    midnight_balance  = balance
+                    cur_date  = jdate
+                    prev_date = jdate
+
+                    if not loose_ftmo:
+                        equity  = balance + fl
+                        dd_pct  = (equity - midnight_balance) / max(midnight_balance, 1.0) * 100.0
+                        if dd_pct <= -self.daily_loss_trigger_pct:
+                            blocked_dates.add(jdate)
+                            xr = "ftmo_daily"
+                            lots_left = lot2 if tp1_hit else lot_size
+                            t = self._make_partial_trade(entry_price, closes[j], sig, lots_left,
+                                                         entry_ts, jts, xr,
+                                                         "remainder" if tp1_hit else "full",
+                                                         tid, balance_at_entry, cur_sl, tp2)
+                            trades.append(t); balance += t.pnl_dollars
+                            last_exit_idx = j; broke_inner = True; break
+                        tot_pct = (equity - self.initial_balance) / self.initial_balance * 100.0
+                        if tot_pct <= -self.total_loss_trigger_pct:
+                            xr = "ftmo_total"
+                            lots_left = lot2 if tp1_hit else lot_size
+                            t = self._make_partial_trade(entry_price, closes[j], sig, lots_left,
+                                                         entry_ts, jts, xr,
+                                                         "remainder" if tp1_hit else "full",
+                                                         tid, balance_at_entry, cur_sl, tp2)
+                            trades.append(t); balance += t.pnl_dollars
+                            halt_reason = f"Total DD {tot_pct:.2f}% at {jts}"
+                            last_exit_idx = j; broke_inner = True; break
+
+                    # Kill switch (daily realized P&L)
+                    if kill_usd is not None:
+                        if (balance - midnight_balance) <= -kill_usd:
+                            kill_blocked.add(jdate)
+
+                # ── Compute SL/TP hits ────────────────────────────────────
+                hit_sl  = (sig ==  1 and lows[j]  <= cur_sl) or (sig == -1 and highs[j] >= cur_sl)
+                hit_tp1 = (_use_partial_here and not tp1_hit and
+                           ((sig ==  1 and highs[j] >= tp1) or (sig == -1 and lows[j]  <= tp1)))
+                hit_tp2 = (sig ==  1 and highs[j] >= tp2) or (sig == -1 and lows[j]  <= tp2)
+
+                # ── Phase 1: pre-TP1 ─────────────────────────────────────
+                if not tp1_hit:
+                    if hit_sl and not hit_tp1:
+                        t = self._make_partial_trade(entry_price, cur_sl, sig, lot_size,
+                                                     entry_ts, jts, "sl", "full",
+                                                     tid, balance_at_entry, cur_sl, tp2)
+                        trades.append(t); balance += t.pnl_dollars
+                        last_exit_idx = j; broke_inner = True; break
+
+                    if hit_tp1:
+                        tp1_hit = True
+                        t1 = self._make_partial_trade(entry_price, tp1, sig, lot1,
+                                                      entry_ts, jts, "tp1", "tp1_slice",
+                                                      tid, balance_at_entry, cur_sl, tp1)
+                        trades.append(t1); balance += t1.pnl_dollars
+                        t1_pnl = t1.pnl_dollars
+                        trail_extreme = tp1
+                        # Variant-specific SL + trail activation after TP1
+                        if trail_variant == "v1":
+                            cur_sl = entry_price + sig * ps  # BE
+                            _trail_active = True             # trail immediately
+                        elif trail_variant == "v2":
+                            cur_sl = orig_sl                 # keep original SL
+                            _trail_active = False            # trail only after 1.5R
+                        elif trail_variant == "v3":
+                            cur_sl = entry_price + sig * ps  # BE
+                            _trail_active = False            # no trail — hold to TP2/BE
+                        elif trail_variant == "v4":
+                            # lock in 50% of TP1 dist
+                            lock = entry_price + sig * 0.5 * abs(tp1 - entry_price)
+                            if (sig == 1 and lock > cur_sl) or (sig == -1 and lock < cur_sl):
+                                cur_sl = lock
+                            _trail_active = False            # trail only after 1.5R
+
+                        if hit_tp2:
+                            t2 = self._make_partial_trade(entry_price, tp2, sig, lot2,
+                                                          entry_ts, jts, "tp2", "remainder",
+                                                          tid, balance_at_entry, cur_sl, tp2)
+                            trades.append(t2); balance += t2.pnl_dollars
+                            last_exit_idx = j; broke_inner = True; break
+                        # fall-through to equity tracking below
+                else:
+                    # ── Phase 2: post-TP1, trail remainder ────────────────
+                    eff_td = td * trail_factor
+                    # V2/V4: activate trail only when price reaches 1.5R from entry
+                    if not _trail_active and trail_variant in ("v2", "v4") and eff_td > 0.0:
+                        trigger = entry_price + sig * 1.5 * orig_dist
+                        hit_trig = (sig == 1 and highs[j] >= trigger) or \
+                                   (sig == -1 and lows[j] <= trigger)
+                        if hit_trig:
+                            _trail_active = True
+                            trail_extreme = highs[j] if sig == 1 else lows[j]
+                    # Apply trail update
+                    if _trail_active and trail_variant != "v3" and eff_td > 0.0:
+                        if sig == 1:
+                            trail_extreme = max(trail_extreme, highs[j])
+                            new_sl = trail_extreme - eff_td
+                        else:
+                            trail_extreme = min(trail_extreme, lows[j])
+                            new_sl = trail_extreme + eff_td
+                        if (sig == 1 and new_sl > cur_sl) or (sig == -1 and new_sl < cur_sl):
+                            cur_sl = new_sl
+
+                    hit_sl2 = (sig == 1 and lows[j] <= cur_sl) or (sig == -1 and highs[j] >= cur_sl)
+                    if hit_sl2 and not hit_tp2:
+                        xr = "sl_after_tp1"
+                        t2 = self._make_partial_trade(entry_price, cur_sl, sig, lot2,
+                                                      entry_ts, jts, xr, "remainder",
+                                                      tid, balance_at_entry, cur_sl, tp2)
+                        trades.append(t2); balance += t2.pnl_dollars
+                        last_exit_idx = j; broke_inner = True; break
+                    if hit_tp2:
+                        t2 = self._make_partial_trade(entry_price, tp2, sig, lot2,
+                                                      entry_ts, jts, "tp2", "remainder",
+                                                      tid, balance_at_entry, cur_sl, tp2)
+                        trades.append(t2); balance += t2.pnl_dollars
+                        last_exit_idx = j; broke_inner = True; break
+
+                # ── Time stop ────────────────────────────────────────────
+                if ts_stop is not None and jts >= ts_stop:
+                    lots_left = lot2 if tp1_hit else lot_size
+                    seg       = "remainder" if tp1_hit else "full"
+                    t = self._make_partial_trade(entry_price, closes[j], sig, lots_left,
+                                                 entry_ts, jts, "time_stop", seg,
+                                                 tid, balance_at_entry, cur_sl, tp2)
+                    trades.append(t); balance += t.pnl_dollars
+                    last_exit_idx = j; broke_inner = True; break
+
+                # ── Equity curve ─────────────────────────────────────────
+                remaining_lots = lot2 if tp1_hit else lot_size
+                fl = sig * (closes[j] - entry_price) / ps * pvpl * remaining_lots
+                eq_curve[jts] = balance + fl
+
+            if not broke_inner:
+                # Inner loop exhausted (end of data) — close whatever's open
+                xp   = closes[n - 1]
+                lots_left = lot2 if tp1_hit else lot_size
+                seg       = "remainder" if tp1_hit else "full"
+                t = self._make_partial_trade(entry_price, xp, sig, lots_left,
+                                             entry_ts, idx[n - 1], "end_of_data", seg,
+                                             tid, balance_at_entry, cur_sl, tp2)
+                trades.append(t); balance += t.pnl_dollars
+                last_exit_idx = n - 1
+
+            eq_curve[idx[last_exit_idx]] = balance
+
+            if halt_reason:
+                break
+
+        if prev_date is not None:
+            day_pnl[prev_date] = balance - midnight_balance
+
+        eq_curve[idx[-1]] = balance
 
         config = {
             "instrument":      self.instrument,

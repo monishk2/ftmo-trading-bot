@@ -1,0 +1,215 @@
+{
+  "_comment": "Live execution configuration for all three platforms.",
+
+  "the5ers": {
+    "_comment": "The5ers $25K Hyper Growth — cTrader + Gold + NAS100",
+    "account_type":       "the5ers_hyper",
+    "account_size":       25000,
+    "profit_target_pct":  6.0,
+    "max_dd_pct":         5.0,
+    "daily_dd_type":      "static_floor",
+    "eval_cost_usd":      95,
+
+    "gold": {
+      "enabled":            true,
+      "cbot_file":          "ctrader_bots/gold_multi_strategy.py",
+      "symbol":             "XAUUSD",
+      "timeframe":          "H1",
+      "trail_variant":      "V4",
+      "risk_per_trade_pct": 0.5,
+      "max_trades_per_day": 3,
+      "daily_kill_pct":     4.0,
+      "rr_tp1":             1.0,
+      "rr_tp2":             2.5,
+      "tp1_pct":            0.5,
+      "trail_atr_mult":     2.0,
+      "module_a": {
+        "buffer_pips":      50.0,
+        "min_range_pips":   500.0,
+        "max_range_pips":   2000.0,
+        "sl_cap_pips":      1000.0,
+        "regime_atr_pct":   40.0,
+        "time_stop_hour":   22
+      },
+      "module_b": {
+        "sl_buffer_pips":   30.0,
+        "sl_cap_pips":      500.0,
+        "sl_min_pips":      20.0,
+        "ema_period":       50,
+        "time_stop_hour":   21
+      },
+      "module_c": {
+        "sl_pips":          200.0,
+        "time_stop_hour":   21
+      }
+    },
+
+    "nas100": {
+      "enabled":            true,
+      "_comment":           "Run NAS100 simultaneously with gold on the same The5ers account. Combined = 61.6% pass rate vs 52% gold-only.",
+      "cbot_file":          "ctrader_bots/nas100_ib_breakout.py",
+      "symbol":             "US100",
+      "_comment_symbol":    "Verify with The5ers broker — may be 'NAS100', 'US100', or 'USTEC'",
+      "timeframe":          "M5",
+      "risk_per_trade_pct": 1.0,
+      "_comment_risk":      "1% NAS100 + 0.5% gold = combined 1.5% per day max. Optimised config from Prompt 32 MC sim.",
+      "rr_ratio":           2.5,
+      "ib_adr_ratio":       99.0,
+      "buffer_points":      5.0,
+      "max_sl_points":      80.0,
+      "min_sl_points":      15.0,
+      "vol_sma_period":     20,
+      "daily_kill_pct":     3.5,
+      "_comment_kill":      "3.5% individual kill. Combined DD of both bots capped at 5% static floor ($1,250). Leave 1.5% buffer.",
+      "time_stop_hour":     15,
+      "time_stop_min":      55
+    },
+
+    "combined_kill_pct":    3.5,
+    "_comment_combined":    "Both bots use 3.5% individual kill. They share the same account equity, so combined max daily loss is ~3.5-4%. Static floor = $1,250 total from account open.",
+    "timezone":             "US/Eastern"
+  },
+
+  "ftmo": {
+    "_comment": "FTMO $10K Standard Challenge — cTrader + Gold only",
+    "account_type":       "ftmo_challenge",
+    "account_size":       10000,
+    "profit_target_pct":  10.0,
+    "max_daily_loss_pct": 5.0,
+    "max_total_loss_pct": 10.0,
+    "daily_loss_type":    "midnight_cet_reference",
+    "eval_cost_usd":      550,
+
+    "gold": {
+      "enabled":            true,
+      "cbot_file":          "ctrader_bots/gold_multi_strategy.py",
+      "symbol":             "XAUUSD",
+      "timeframe":          "H1",
+      "trail_variant":      "V4",
+      "risk_per_trade_pct": 1.5,
+      "_comment_risk":      "1.5% risk targets 57% pass rate per backtest MC sim",
+      "max_trades_per_day": 3,
+      "daily_kill_pct":     4.0,
+      "total_dd_kill_pct":  9.0,
+      "rr_tp1":             1.0,
+      "rr_tp2":             2.5,
+      "tp1_pct":            0.5,
+      "trail_atr_mult":     2.0,
+      "module_a": {
+        "buffer_pips":      50.0,
+        "min_range_pips":   500.0,
+        "max_range_pips":   2000.0,
+        "sl_cap_pips":      1000.0,
+        "regime_atr_pct":   40.0,
+        "time_stop_hour":   22
+      },
+      "module_b": {
+        "sl_buffer_pips":   30.0,
+        "sl_cap_pips":      500.0,
+        "sl_min_pips":      20.0,
+        "ema_period":       50,
+        "time_stop_hour":   21
+      },
+      "module_c": {
+        "sl_pips":          200.0,
+        "time_stop_hour":   21
+      }
+    },
+
+    "nas100": {
+      "enabled":            false
+    },
+
+    "combined_kill_pct":    4.0,
+    "timezone":             "US/Eastern"
+  },
+
+  "apex": {
+    "_comment": "Apex Trader Funding $50K eval — Tradovate + NQ/MNQ futures",
+    "account_type":       "apex_eval",
+    "account_size":       50000,
+    "profit_target_usd":  3000,
+    "max_dd_usd":         2500,
+    "daily_loss_limit_usd": 1000,
+    "eval_cost_usd":      20,
+    "recommended_batch":  5,
+    "_comment_batch":     "Buy 5x $50K evals for $100 total → 57.2% funded probability",
+
+    "env":                "demo",
+    "_comment_env":       "Switch to 'live' after paper trading validation",
+
+    "username":           "",
+    "_comment_creds":     "Set via TRADOVATE_USER / TRADOVATE_PASS env vars (not here)",
+    "password":           "",
+    "app_id":             "",
+    "app_version":        "1.0",
+    "cid":                "",
+    "secret":             "",
+
+    "symbol":             "NQ",
+    "_comment_symbol":    "Pass 'NQ' to auto-resolve front-month; or specify 'NQM5' directly",
+    "use_mnq":            false,
+    "_comment_mnq":       "Set true for micro contracts (MNQ) if account too small for NQ",
+    "contracts":          0,
+    "_comment_contracts": "0 = auto-size by risk%; >0 = fixed contract count",
+
+    "risk_per_trade_pct": 2.0,
+    "_comment_risk":      "2.0% for eval (targets 35% pass); switch to 0.5% when funded",
+    "rr_ratio":           2.5,
+    "ib_adr_ratio":       99.0,
+    "_comment_ib":        "99 = no IB filter (raw NY open breakout is superior per WF)",
+    "adr_lookback_days":  5,
+    "buffer_points":      5.0,
+    "max_sl_points":      80.0,
+    "min_sl_points":      15.0,
+    "vol_sma_period":     20,
+    "daily_kill_pct":     2.0,
+    "_comment_kill":      "Apex DLL = $1,000 (2% of $50K); stop trading at 1.9%",
+
+    "timezone":           "US/Eastern"
+  },
+
+  "topstep": {
+    "_comment": "TopStep $50K — same Tradovate connector, different account rules",
+    "account_type":       "topstep_eval",
+    "account_size":       50000,
+    "profit_target_usd":  3000,
+    "max_dd_usd":         2000,
+    "daily_loss_limit_usd": 1000,
+    "eval_cost_usd":      165,
+
+    "env":                "demo",
+    "username":           "",
+    "password":           "",
+    "app_id":             "",
+    "app_version":        "1.0",
+    "cid":                "",
+    "secret":             "",
+
+    "symbol":             "NQ",
+    "use_mnq":            false,
+    "contracts":          0,
+
+    "risk_per_trade_pct": 2.0,
+    "rr_ratio":           2.5,
+    "ib_adr_ratio":       99.0,
+    "buffer_points":      5.0,
+    "max_sl_points":      80.0,
+    "min_sl_points":      15.0,
+    "vol_sma_period":     20,
+    "daily_kill_pct":     2.0,
+
+    "timezone":           "US/Eastern"
+  },
+
+  "paper_trade": {
+    "_comment": "Paper trading settings for signal validation before going live",
+    "enabled":            true,
+    "log_dir":            "logs/paper_trade/",
+    "compare_backtest":   true,
+    "backtest_pkl_gold":  "results/gold_multi_v4_backtest.pkl",
+    "backtest_pkl_nas100":"results/nas100_ib_backtest.pkl",
+    "tolerance_pct":      5.0,
+    "_comment_tol":       "Signal prices must match backtest within 5% to pass verification"
+  }
+}

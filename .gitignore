@@ -44,10 +44,10 @@ htmlcov/
 
 # Reports — generated output, not source
 reports/
+results/
+
+# Duplicate entries cleaned up
 config/mt5_credentials.json
-config/ctrader_credentials.json
-data/historical/
 venv/
-__pycache__/
 *.pyc
 .DS_Store

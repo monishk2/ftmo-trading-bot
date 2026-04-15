@@ -167,7 +167,7 @@ def simulate_ftmo_pass_rate(
     rng = np.random.default_rng(seed)
 
     # One equity sample per business day
-    daily = equity.resample("B").last().dropna()
+    daily = equity.resample("D").last().dropna()
     n_days = len(daily)
 
     if n_days <= window_trading_days:
